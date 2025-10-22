@@ -11,16 +11,21 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
       <p [innerHTML]="message"></p>
     </div>
     <div class="modal-footer">
+      @if(isAlert){
+      <button type="button" class="btn btn-primary" (click)="confirm()">OK</button>
+      }@else {
       <button type="button" class="btn btn-secondary" (click)="decline()">Cancel</button>
       <button type="button" class="btn btn-danger" (click)="confirm()">Confirm</button>
+      }
     </div>
   `,
-  standalone: true
+  standalone: true,
 })
 export class ConfirmationModalComponent {
   title = 'Confirm Action';
   message = 'Are you sure?';
   result = false;
+  isAlert = false;
 
   constructor(public bsModalRef: BsModalRef) {}
 
