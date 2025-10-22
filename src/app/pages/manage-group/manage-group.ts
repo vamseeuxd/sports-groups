@@ -79,7 +79,11 @@ export class ManageGroup {
     const name = nameRef.value.trim();
     if (!name) return;
     if (this.groups.some((g) => g.name.toLowerCase() === name.toLowerCase())) {
-      alert('Group name already exists!');
+      this.confirmationModal.confirm(
+        'Duplicate Group',
+        `Group name already exists! "${name}"!`,
+        true
+      );
       return;
     }
     const id = this.loader.show();
@@ -126,7 +130,6 @@ export class ManageGroup {
     if (
       this.groups.some((g) => g.id !== group.id && g.name.toLowerCase() === newName.toLowerCase())
     ) {
-      // alert('Group name already exists!');
       this.confirmationModal.confirm(
         'Duplicate Group',
         `Group name already exists! "${newName}"!`,
