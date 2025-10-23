@@ -4,82 +4,19 @@
     <h4 class="text-center pt-3 pb-2">Sport Groups</h4>
     <ul class="list-group mx-3">
       @for (group of groups$ | async; track group.id) {
-      <li
-        [class.py-2]="editingId !== group.id"
-        [class.p-1]="editingId === group.id && group.id"
-        class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 p-1 d-flex justify-content-between align-items-center"
-      >
-        @if (editingId === group.id && group.id) {
-        <div class="input-group">
-          <input
-            autofocus
-            [value]="group.name"
-            type="text"
-            (keyup.enter)="edit(group, editName)"
-            #editName
-            (keyup.escape)="editingId = null"
-            class="form-control"
-            placeholder="Group Name to Update"
-          />
-          <button
-            class="btn btn-outline-success"
-            type="button"
-            id="button-addon2"
-            (click)="edit(group, editName)"
-          >
-            <i class="bi bi-floppy-fill"></i>
-          </button>
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            id="button-addon2"
-            (click)="editingId = null"
-          >
-            <i class="bi bi-x-lg"></i>
-          </button>
-        </div>
-        } @else {
-        {{ group.name }}
-        @if (group.role === 'admin') {
-        <div>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-primary border-0 me-1"
-            (click)="editingId = group.id || null"
-          >
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-danger border-0"
-            (click)="delete(group)"
-          >
-            <i class="bi bi-trash3-fill"></i>
-          </button>
-        </div>
-        } }
-      </li>
+        <app-group-item 
+          [group]="group" 
+          [isEditing]="editingId === group.id"
+          (edit)="startEdit(group.id || '')"
+          (save)="edit(group, $event)"
+          (cancel)="cancelEdit()"
+          (delete)="delete(group)">
+        </app-group-item>
       }
-      <li class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 p-1">
-        <div class="input-group">
-          <input
-            autofocus
-            type="text"
-            (keyup.enter)="add(newGroupName, user.email)"
-            #newGroupName
-            class="form-control"
-            placeholder="New Group Name"
-          />
-          <button
-            class="btn btn-warning"
-            type="button"
-            id="button-addon2"
-            (click)="add(newGroupName, user.email)"
-          >
-            <i class="bi bi-plus-lg"></i>
-          </button>
-        </div>
-      </li>
+      <app-group-form 
+        [userEmail]="user.email" 
+        (add)="add($event, user.email)">
+      </app-group-form>
     </ul>
   </div>
 </div>
