@@ -1,0 +1,41 @@
+@if (user$ | async; as user) { @if (user.email) {
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <div class="d-flex align-items-center pt-3 pb-2">
+      <button class="btn btn-outline-dark border-0 me-auto" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h4 class="text-center mx-auto">Tournaments</h4>
+      <button class="btn btn-outline-dark border-0 ms-auto" (click)="openAddModal()">
+        Add <i class="bi bi-plus-lg"></i> 
+      </button>
+    </div>
+    <ul class="list-group mx-3">
+      @for (tournament of tournaments$ | async; track tournament.id) {
+        <li class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 p-2">
+          <div class="position-relative">
+            <div class="w-100">
+              <h6 class="ps-2 mb-0 pb-0 mt-1">{{tournament.name}}</h6>
+              <p class="ps-2 border-bottom pb-1 mb-1 border-secondary">{{tournament.description}}</p>
+              <div class="mt-2 px-2 row text-center">
+                <span class="col text-warning-emphasis me-2 border-end border-secondary">{{tournament.sport}}</span>
+                <span class="col text-warning-emphasis me-2">{{formatDateForDisplay(tournament.startDate) | date}}</span>
+              </div>
+            </div>
+            <div class="position-absolute top-0 end-0 mt-0 me-2">
+              <button type="button" class="btn btn-sm btn-outline-primary border-0 me-1" 
+                      (click)="openEditModal(tournament)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger border-0" 
+                      (click)="delete(tournament)">
+                <i class="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</div>
+} }

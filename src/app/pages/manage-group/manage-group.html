@@ -10,7 +10,8 @@
           (edit)="startEdit(group.id || '')"
           (save)="edit(group, $event)"
           (cancel)="cancelEdit()"
-          (delete)="delete(group)">
+          (delete)="delete(group)"
+          (navigate)="navigateToTournaments($event)">
         </app-group-item>
       }
       <app-group-form 

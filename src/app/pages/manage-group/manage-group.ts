@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { LoaderService } from '../../services/loader.service';
 import { ConfirmationModalService } from '../../services/confirmation-modal.service';
 import { GroupService } from '../../services/group.service';
@@ -17,6 +18,7 @@ import { APP_CONSTANTS } from '../../constants/app.constants';
   styleUrl: './manage-group.scss',
 })
 export class ManageGroup {
+  private router = inject(Router);
   private groupService = inject(GroupService);
   private userService = inject(UserService);
   private loader = inject(LoaderService);
@@ -114,5 +116,9 @@ export class ManageGroup {
 
   cancelEdit() {
     this.editingId = null;
+  }
+
+  navigateToTournaments(groupId: string) {
+    this.router.navigate(['/manage-tournaments', groupId]);
   }
 }

@@ -11,4 +11,9 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () => import('./pages/manage-group/manage-group').then(c => c.ManageGroup)
     },
+    {
+        path: 'manage-tournaments/:groupId',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/manage-tournaments/manage-tournaments').then(c => c.ManageTournaments)
+    },
 ];
