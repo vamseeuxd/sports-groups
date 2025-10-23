@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, updateDoc, query, where } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, updateDoc, query, where, orderBy } from '@angular/fire/firestore';
 import { Observable, firstValueFrom } from 'rxjs';
 import { IGroup, IUser } from '../models/group.model';
 import { ValidationService } from './validation.service';
@@ -15,7 +15,8 @@ export class GroupService {
   private usersCollection = collection(this.firestore, APP_CONSTANTS.COLLECTIONS.USERS);
 
   getGroups(): Observable<IGroup[]> {
-    return collectionData(this.groupsCollection, { idField: 'id' }) as Observable<IGroup[]>;
+    const sortedQuery = query(this.groupsCollection, orderBy('createdOn', 'asc'));
+    return collectionData(sortedQuery, { idField: 'id' }) as Observable<IGroup[]>;
   }
 
   async createGroup(name: string, adminEmail: string): Promise<void> {
@@ -24,22 +25,37 @@ export class GroupService {
       throw new Error('Invalid group name');
     }
     
-    const groupRef = await addDoc(this.groupsCollection, { name: sanitizedName });
+    const now = new Date();
+    const groupRef = await addDoc(this.groupsCollection, { 
+      name: sanitizedName,
+      createdBy: adminEmail,
+      createdOn: now,
+      lastUpdatedBy: adminEmail,
+      lastUpdatedOn: now
+    });
     await addDoc(this.usersCollection, { 
       email: adminEmail, 
       groupId: groupRef.id, 
-      role: 'admin' 
+      role: 'admin',
+      createdBy: adminEmail,
+      createdOn: now,
+      lastUpdatedBy: adminEmail,
+      lastUpdatedOn: now
     });
   }
 
-  async updateGroup(groupId: string, name: string): Promise<void> {
+  async updateGroup(groupId: string, name: string, updatedBy: string): Promise<void> {
     const sanitizedName = this.validation.sanitizeInput(name);
     if (!this.validation.isValidGroupName(sanitizedName)) {
       throw new Error('Invalid group name');
     }
     
     const groupRef = doc(this.firestore, APP_CONSTANTS.COLLECTIONS.GROUPS, groupId);
-    await updateDoc(groupRef, { name: sanitizedName });
+    await updateDoc(groupRef, { 
+      name: sanitizedName,
+      lastUpdatedBy: updatedBy,
+      lastUpdatedOn: new Date()
+    });
   }
 
   async deleteGroup(groupId: string): Promise<void> {

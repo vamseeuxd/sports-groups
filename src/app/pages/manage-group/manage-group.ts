@@ -4,7 +4,7 @@ import { ConfirmationModalService } from '../../services/confirmation-modal.serv
 import { GroupService } from '../../services/group.service';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { IGroupRole } from '../../models/group.model';
 import { GroupItemComponent } from '../../components/group-item/group-item.component';
 import { GroupFormComponent } from '../../components/group-form/group-form.component';
@@ -90,9 +90,12 @@ export class ManageGroup {
       return;
     }
     
+    const user = await firstValueFrom(this.user$);
+    if (!user?.email) return;
+    
     const id = this.loader.show();
     try {
-      await this.groupService.updateGroup(group.id, newName);
+      await this.groupService.updateGroup(group.id, newName, user.email);
       this.editingId = null;
     } catch (error) {
       this.confirmationModal.confirm(
