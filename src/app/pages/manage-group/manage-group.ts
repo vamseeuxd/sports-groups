@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { LoaderService } from '../../services/loader.service';
 import { ConfirmationModalService } from '../../services/confirmation-modal.service';
 import { GroupService } from '../../services/group.service';
@@ -13,7 +13,7 @@ import { APP_CONSTANTS } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-manage-group',
-  imports: [CommonModule, GroupItemComponent, GroupFormComponent],
+  imports: [CommonModule, GroupItemComponent, GroupFormComponent, RouterLink],
   templateUrl: './manage-group.html',
   styleUrl: './manage-group.scss',
 })

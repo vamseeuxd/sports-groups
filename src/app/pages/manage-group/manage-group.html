@@ -18,6 +18,10 @@
         [userEmail]="user.email" 
         (add)="add($event, user.email)">
       </app-group-form>
+      <li class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 px-3 py-2 d-flex justify-content-between align-items-center"
+       [routerLink]="['../player-registration']">
+        Player Registrations
+      </li>
     </ul>
   </div>
 </div>

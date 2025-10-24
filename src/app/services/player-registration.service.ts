@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, doc, getDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { ITournament, IPlayerRegistration } from '../models/group.model';
 import { APP_CONSTANTS } from '../constants/app.constants';
 
@@ -23,6 +23,16 @@ export class PlayerRegistrationService {
     } catch (error) {
       throw new Error('Tournament not found');
     }
+  }
+
+  async checkExistingRegistration(tournamentId: string, email: string): Promise<boolean> {
+    const q = query(
+      this.registrationsCollection,
+      where('tournamentId', '==', tournamentId),
+      where('playerEmail', '==', email)
+    );
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
   }
 
   async registerPlayer(registration: Omit<IPlayerRegistration, 'id'>): Promise<void> {
