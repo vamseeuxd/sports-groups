@@ -27,3 +27,11 @@ export const SPORTS_OPTIONS = [
   'Football', 'Basketball', 'Tennis', 'Cricket', 'Baseball', 
   'Soccer', 'Volleyball', 'Badminton', 'Table Tennis', 'Golf'
 ];
+
+export interface IPlayerRegistration {
+  tournamentId: string;
+  playerName: string;
+  playerEmail: string;
+  registrationDate: Date;
+  id?: string;
+}

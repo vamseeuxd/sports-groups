@@ -1,0 +1,71 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="d-flex justify-content-between align-items-center pt-3 pb-2">
+        <h4>Tournament Registration</h4>
+        <button class="btn btn-secondary btn-sm" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+      </div>
+
+      @if (showScanner) {
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">Scan Tournament QR Code</h5>
+          </div>
+          <div class="card-body text-center">
+            <p class="text-muted mb-3">Point your camera at the tournament QR code to get started</p>
+            <div class="scanner-container">
+              <zxing-scanner 
+                [enable]="scannerEnabled"
+                (scanSuccess)="onCodeResult($event)"
+                [formats]="allowedFormats">
+              </zxing-scanner>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (tournament && !showScanner) {
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="mb-0">Tournament Details</h5>
+          </div>
+          <div class="card-body">
+            <h6><strong>{{tournament.name}}</strong></h6>
+            <p class="mb-1"><strong>Sport:</strong> {{tournament.sport}}</p>
+            <p class="mb-1"><strong>Start Date:</strong> {{formatDate(tournament.startDate) | date}}</p>
+            <p class="mb-0"><strong>Description:</strong> {{tournament.description}}</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Player Registration</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Player Name *</label>
+              <input type="text" class="form-control" [(ngModel)]="playerName" 
+                     placeholder="Enter your full name">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email Address *</label>
+              <input type="email" class="form-control" [(ngModel)]="playerEmail" 
+                     placeholder="Enter your email address">
+            </div>
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary" (click)="registerPlayer()" 
+                      [disabled]="!playerName.trim() || !playerEmail.trim()">
+                Register for Tournament
+              </button>
+              <button class="btn btn-outline-secondary" (click)="resetForm()">
+                Scan Different Tournament
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

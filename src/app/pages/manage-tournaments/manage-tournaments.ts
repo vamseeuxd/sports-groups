@@ -8,6 +8,7 @@ import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { Observable, firstValueFrom } from 'rxjs';
 import { ITournament, SPORTS_OPTIONS } from '../../models/group.model';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-manage-tournaments',
@@ -29,6 +30,7 @@ export class ManageTournaments {
   groupId = this.route.snapshot.params['groupId'];
   editingId: string | null = null;
   sportsOptions = SPORTS_OPTIONS;
+  showQRPopover: string | null = null;
 
   constructor() {
     if (!this.groupId) {
@@ -114,5 +116,30 @@ export class ManageTournaments {
       return date.toDate();
     }
     return new Date(date);
+  }
+
+  async showQRCode(tournamentId: string) {
+    if (this.showQRPopover === tournamentId) {
+      this.showQRPopover = null;
+      return;
+    }
+    
+    this.showQRPopover = tournamentId;
+    
+    setTimeout(async () => {
+      try {
+        const qrDataURL = await QRCode.toDataURL(tournamentId, { width: 200 });
+        const imgElement = document.getElementById(`qr-${tournamentId}`) as HTMLImageElement;
+        if (imgElement) {
+          imgElement.src = qrDataURL;
+        }
+      } catch (error) {
+        this.confirmationModal.confirm('Error', 'Failed to generate QR code.', true);
+      }
+    }, 0);
+  }
+
+  hideQRCode() {
+    this.showQRPopover = null;
   }
 }
