@@ -3,7 +3,53 @@
     <h5 class="mb-0"><i class="bi bi-person-plus"></i> Registration Users</h5>
   </div>
   <div class="card-body">
-    <p>Tournament ID: <strong>{{tournamentId}}</strong></p>
-    <p class="text-muted">View and manage user registrations for this tournament.</p>
+    <div *ngIf="loading" class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    
+    <div *ngIf="!loading && registrations.length === 0" class="text-center text-muted">
+      <i class="bi bi-inbox display-4"></i>
+      <p class="mt-2">No registrations found for this tournament.</p>
+    </div>
+
+    <div *ngIf="!loading && registrations.length > 0">
+      <div class="list-group">
+        <div *ngFor="let registration of registrations" class="list-group-item">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 d-flex align-items-center">
+                <i class="bi bi-person-fill me-2"></i>{{registration.playerName | titlecase}}
+                <span class="badge ms-auto" [class]="getStatusClass(registration.status)">
+                  {{(registration.status || 'pending') | titlecase}}
+                </span>
+              </h6>
+              <p class="mb-1 text-muted"><i class="bi bi-envelope-at me-2"></i>{{registration.playerEmail}}</p>
+              <small class="text-muted">{{registration.registrationDate | date:'short'}}</small>
+              <div class="btn-group btn-group-sm w-100" role="group">
+                <button *ngIf="registration.status !== 'approved'" 
+                        class="btn btn-success" 
+                        (click)="approveRegistration(registration)"
+                        title="Approve">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button *ngIf="registration.status !== 'rejected'" 
+                        class="btn btn-warning" 
+                        (click)="rejectRegistration(registration)"
+                        title="Reject">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+                <button class="btn btn-danger" 
+                        (click)="deleteRegistration(registration)"
+                        title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

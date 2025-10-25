@@ -1,8 +1,9 @@
 import { Component, Input, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { TournamentService } from '../../../../services/tournament.service';
 import { ITournament } from '../../../../models/group.model';
+import { Timestamp } from 'firebase/firestore';
 
 @Component({
   selector: 'app-tournament-info',
@@ -17,6 +18,13 @@ export class TournamentInfoComponent implements OnInit {
   tournament$!: Observable<ITournament>;
 
   ngOnInit() {
-    this.tournament$ = this.tournamentService.getTournamentById(this.tournamentId);
+    this.tournament$ = this.tournamentService.getTournamentById(this.tournamentId).pipe(
+      map(tournament => ({
+        ...tournament,
+        startDate: tournament.startDate instanceof Timestamp 
+          ? tournament.startDate.toDate() 
+          : tournament.startDate
+      }))
+    );
   }
 }

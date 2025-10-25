@@ -33,5 +33,6 @@ export interface IPlayerRegistration {
   playerName: string;
   playerEmail: string;
   registrationDate: Date;
+  status?: 'pending' | 'approved' | 'rejected';
   id?: string;
 }

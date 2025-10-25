@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, doc, getDoc, query, where, getDocs } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, doc, getDoc, query, where, getDocs, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { ITournament, IPlayerRegistration } from '../models/group.model';
 import { APP_CONSTANTS } from '../constants/app.constants';
 
@@ -39,11 +39,31 @@ export class PlayerRegistrationService {
     const now = new Date();
     await addDoc(this.registrationsCollection, {
       ...registration,
+      status: 'pending',
       registrationDate: now,
       createdBy: registration.playerEmail,
       createdOn: now,
       lastUpdatedBy: registration.playerEmail,
       lastUpdatedOn: now
     });
+  }
+
+  async getRegistrationsByTournament(tournamentId: string): Promise<IPlayerRegistration[]> {
+    const q = query(
+      this.registrationsCollection,
+      where('tournamentId', '==', tournamentId)
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as IPlayerRegistration));
+  }
+
+  async updateRegistrationStatus(registrationId: string, status: 'approved' | 'rejected'): Promise<void> {
+    const registrationRef = doc(this.registrationsCollection, registrationId);
+    await updateDoc(registrationRef, { status });
+  }
+
+  async deleteRegistration(registrationId: string): Promise<void> {
+    const registrationRef = doc(this.registrationsCollection, registrationId);
+    await deleteDoc(registrationRef);
   }
 }
