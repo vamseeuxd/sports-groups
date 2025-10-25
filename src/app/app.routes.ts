@@ -20,4 +20,9 @@ export const routes: Routes = [
         path: 'player-registration',
         loadComponent: () => import('./pages/player-registration/player-registration').then(c => c.PlayerRegistration)
     },
+    {
+        path: 'tournament-config/:groupId/:tournamentId',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/tournament-config/tournament-config').then(c => c.TournamentConfig)
+    },
 ];

@@ -1,0 +1,23 @@
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Tournament Information</h5>
+  </div>
+  <div class="card-body">
+    @if (tournament$ | async; as tournament) {
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Name:</strong> {{tournament.name}}</p>
+          <p><strong>Sport:</strong> {{tournament.sport}}</p>
+          <p><strong>Start Date:</strong> {{tournament.startDate | date}}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Tournament ID:</strong> {{tournamentId}}</p>
+          <p><strong>Group ID:</strong> {{tournament.groupId}}</p>
+          <p><strong>Description:</strong> {{tournament.description}}</p>
+        </div>
+      </div>
+    } @else {
+      <p class="text-muted">Loading tournament information...</p>
+    }
+  </div>
+</div>

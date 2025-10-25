@@ -1,0 +1,57 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <div class="d-flex align-items-center pt-3 pb-2">
+        <button class="btn btn-outline-dark border-0 me-auto text-truncate" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+        <div class="text-center mx-auto" style="max-width: 50%;">
+          <h5 class="mb-0 text-truncate">Tournament Config</h5>
+          <!-- @if (tournament$ | async; as tournament) {
+            <small class="text-muted">{{tournament.name}}</small>
+          } -->
+        </div>
+        <button class="btn btn-outline-dark border-0 ms-auto text-truncate" style="opacity: 0;pointer-events: none;">
+          Add <i class="bi bi-plus-lg"></i> 
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        @if (activeTab === 'info') {
+          <app-tournament-info [tournamentId]="tournamentId"></app-tournament-info>
+        }
+        @if (activeTab === 'teams') {
+          <app-tournament-teams [tournamentId]="tournamentId"></app-tournament-teams>
+        }
+        @if (activeTab === 'registrations') {
+          <app-registration-users [tournamentId]="tournamentId"></app-registration-users>
+        }
+      </div>
+
+      <!-- Tabs -->
+      <!-- <ul class="nav nav-pills nav-justified  mt-3">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')">
+            <i class="bi bi-info-circle"></i> Info
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'registrations'" (click)="setActiveTab('registrations')">
+            <i class="bi bi-person-plus"></i> Registrations
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'teams'" (click)="setActiveTab('teams')">
+            <i class="bi bi-people"></i> Teams
+          </button>
+        </li>
+      </ul> -->
+      <nav class="nav nav-pills nav-justified nav-fill mt-3 bg-warning p-1 rounded">
+        <a class="nav-link text-dark" [class.text-white]="activeTab === 'info'" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')"><i class="bi bi-info-circle"></i> Info</a>
+        <a class="nav-link text-dark" [class.text-white]="activeTab === 'registrations'" [class.active]="activeTab === 'registrations'" (click)="setActiveTab('registrations')"><i class="bi bi-person-plus"></i> Players</a>
+        <a class="nav-link text-dark" [class.text-white]="activeTab === 'teams'" [class.active]="activeTab === 'teams'" (click)="setActiveTab('teams')"><i class="bi bi-people"></i> Teams</a>
+      </nav>
+    </div>
+  </div>
+</div>

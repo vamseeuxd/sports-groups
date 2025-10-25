@@ -3,11 +3,11 @@
     <div class="row" (click)="hideQRCode()">
       <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
         <div class="d-flex align-items-center pt-3 pb-2">
-          <button class="btn btn-outline-dark border-0 me-auto" (click)="goBack()">
+          <button class="btn btn-outline-dark border-0 me-auto text-truncate" (click)="goBack()">
             <i class="bi bi-arrow-left"></i> Back
           </button>
-          <h4 class="text-center mx-auto">Tournaments</h4>
-          <button class="btn btn-outline-dark border-0 ms-auto" (click)="openAddModal()">
+          <h4 class="text-center mx-auto text-truncate" style="max-width: 50%;">Tournaments</h4>
+          <button class="btn btn-outline-dark border-0 ms-auto text-truncate" (click)="openAddModal()">
             Add <i class="bi bi-plus-lg"></i> 
           </button>
         </div>
@@ -17,7 +17,7 @@
               <div class="position-relative px-1" (click)="$event.stopPropagation()">
                 <div class="w-100">
                   <p class="mb-0 py-1 fw-medium fs-6">{{tournament.name}}</p>
-                  <p class="mb-0 pb-1 border-bottom border-warning position-relative">
+                  <p class="mb-0 pb-1 position-relative">
                     ID : <span class="text-secondary fw-medium" style="cursor: pointer; text-decoration: underline;" (click)="showQRCode(tournament.id!)">{{tournament.id}}</span>
                     
                     @if (showQRPopover === tournament.id) {
@@ -53,14 +53,14 @@
                     <span class="col text-warning-emphasis me-2 border-end border-warning">{{tournament.sport}}</span>
                     <span class="col text-warning-emphasis me-2">{{formatDateForDisplay(tournament.startDate) | date}}</span>
                   </div> 
-                </div>
-                <div class="position-absolute top-0 end-0 mt-0 me-1">
-                  <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-pencil"></i> </button>
-                    <!-- <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-qr-code-scan"></i> </button> -->
-                    <button type="button" class="btn btn-sm btn-danger" (click)="delete(tournament)"> <i class="bi bi-trash3-fill"></i> </button>
-                  </div>
-                </div>
+                  <div class="mt-2 row">
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-sm btn-primary" (click)="configureTournament(tournament.id!)" title="Configure Tournament"> <i class="bi bi-gear"></i> </button>
+                      <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-pencil"></i> </button>
+                      <button type="button" class="btn btn-sm btn-danger" (click)="delete(tournament)"> <i class="bi bi-trash3-fill"></i> </button>
+                    </div>
+                  </div> 
+                </div>                
               </div>
             </li>
           }

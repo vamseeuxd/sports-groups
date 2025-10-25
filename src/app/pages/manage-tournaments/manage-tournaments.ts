@@ -153,4 +153,8 @@ export class ManageTournaments {
   hideQRCode() {
     this.showQRPopover = null;
   }
+
+  configureTournament(tournamentId: string) {
+    this.router.navigate(['/tournament-config', this.groupId, tournamentId]);
+  }
 }

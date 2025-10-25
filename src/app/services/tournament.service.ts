@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, updateDoc, query, where, orderBy } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, updateDoc, query, where, orderBy, docData } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { ITournament } from '../models/group.model';
 import { ValidationService } from './validation.service';
@@ -20,6 +20,11 @@ export class TournamentService {
       orderBy('createdOn', 'asc')
     );
     return collectionData(groupQuery, { idField: 'id' }) as Observable<ITournament[]>;
+  }
+
+  getTournamentById(tournamentId: string): Observable<ITournament> {
+    const tournamentRef = doc(this.firestore, APP_CONSTANTS.COLLECTIONS.TOURNAMENTS, tournamentId);
+    return docData(tournamentRef, { idField: 'id' }) as Observable<ITournament>;
   }
 
   async createTournament(tournament: Omit<ITournament, 'id'>, createdBy: string): Promise<void> {
