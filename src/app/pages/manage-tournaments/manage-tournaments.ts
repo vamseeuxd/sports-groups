@@ -8,7 +8,7 @@ import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { Observable, firstValueFrom } from 'rxjs';
 import { ITournament, SPORTS_OPTIONS } from '../../models/group.model';
-import * as QRCode from 'qrcode';
+import QRCode from 'qrcode';
 
 @Component({
   selector: 'app-manage-tournaments',
@@ -128,15 +128,26 @@ export class ManageTournaments {
     
     setTimeout(async () => {
       try {
-        const qrDataURL = await QRCode.toDataURL(tournamentId, { width: 200 });
+        const qrDataURL = await QRCode.toDataURL(tournamentId, { 
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
         const imgElement = document.getElementById(`qr-${tournamentId}`) as HTMLImageElement;
         if (imgElement) {
           imgElement.src = qrDataURL;
+          imgElement.style.display = 'block';
+          imgElement.onload = () => console.log('QR code loaded successfully');
+          imgElement.onerror = () => console.error('QR code failed to load');
         }
       } catch (error) {
+        console.error('QR generation error:', error);
         this.confirmationModal.confirm('Error', 'Failed to generate QR code.', true);
       }
-    }, 0);
+    }, 100);
   }
 
   hideQRCode() {

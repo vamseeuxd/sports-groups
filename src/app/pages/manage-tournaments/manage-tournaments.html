@@ -17,7 +17,7 @@
             <div class="w-100">
               <p class="mb-0 py-1 fw-medium fs-6">{{tournament.name}}</p>
               <p class="mb-0 pb-1 border-bottom border-warning position-relative">
-                ID : <span class="text-primary" style="cursor: pointer; text-decoration: underline;" 
+                ID : <span class="text-secondary fw-medium" style="cursor: pointer; text-decoration: underline;" 
                           (click)="showQRCode(tournament.id!)">{{tournament.id}}</span>
                 
                 @if (showQRPopover === tournament.id) {
@@ -28,7 +28,7 @@
                       <button class="btn-close btn-sm" (click)="hideQRCode()"></button>
                     </div>
                     <div class="text-center">
-                      <img [id]="'qr-' + tournament.id" class="img-fluid" style="max-width: 180px;" />
+                      <img [id]="'qr-' + tournament.id" class="img-fluid" style="max-width: 180px; height: auto; display: block;" alt="Tournament QR Code" />
                       <div class="mt-2">
                         <small class="text-muted">Scan to register for tournament</small>
                       </div>

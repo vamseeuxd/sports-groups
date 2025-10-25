@@ -47,12 +47,12 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.form-control:focus {
-  background-color: #fff8e1;
+.form-control:focus, .form-control, .form-select {
+  background-color: #faf6e6;
   color: #7f620a;
   border-color: #f6e6b7;
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgb(217 163 1 / 30%);
+  box-shadow: 0 0 0 0.05rem rgb(217 163 1 / 30%);
 }
 
 .card {
@@ -67,4 +67,16 @@ body {
   color: #7f620a;
   background-color: #fff8e1;
   border: var(--bs-card-border-width) solid #fff8e1;
+}
+
+.modal {
+  --bs-modal-bg: var(--bs-warning-bg-subtle);
+  --bs-modal-color: #7f620a;
+  /* 
+  --bs-modal-border-color: var(--bs-border-color-translucent);
+  --bs-modal-box-shadow: var(--bs-box-shadow-sm);
+  --bs-modal-header-border-color: var(--bs-border-color);
+  --bs-modal-footer-bg: var(--bs-warning-bg);
+  --bs-modal-footer-border-color: var(--bs-border-color);
+  --bs-modal-footer-border-width: var(--bs-border-width); */
 }
