@@ -25,7 +25,9 @@
           <app-tournament-teams [tournamentId]="tournamentId"></app-tournament-teams>
         }
         @if (activeTab === 'registrations') {
-          <app-registration-users [tournamentId]="tournamentId"></app-registration-users>
+          @if (tournament$ | async; as tournament) {
+            <app-registration-users [tournament]="tournament"></app-registration-users>
+          }
         }
       </div>
 

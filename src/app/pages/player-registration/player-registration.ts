@@ -9,11 +9,12 @@ import { ConfirmationModalService } from '../../services/confirmation-modal.serv
 import { PlayerRegistrationService } from '../../services/player-registration.service';
 import { ITournament } from '../../models/group.model';
 import { UserService } from '../../services';
+import { PlayerRegistrationFormComponent } from '../../components';
 
 @Component({
   selector: 'app-player-registration',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZXingScannerModule],
+  imports: [CommonModule, FormsModule, ZXingScannerModule, PlayerRegistrationFormComponent],
   templateUrl: './player-registration.html',
   styleUrl: './player-registration.scss'
 })
@@ -116,48 +117,12 @@ export class PlayerRegistration implements OnInit {
     }
   }
 
-  async registerPlayer() {
-    if (!this.tournament?.id || !this.playerName.trim() || !this.playerEmail.trim()) {
-      this.confirmationModal.confirm('Error', 'Please fill in all required fields.', true);
-      return;
-    }
-
-    const id = this.loader.show();
-    try {
-      const isAlreadyRegistered = await this.playerRegistrationService.checkExistingRegistration(
-        this.tournament.id,
-        this.playerEmail.trim()
-      );
-      
-      if (isAlreadyRegistered) {
-        this.confirmationModal.confirm('Already Registered', 'You have already registered for this tournament.', true);
-        return;
-      }
-
-      await this.playerRegistrationService.registerPlayer({
-        tournamentId: this.tournament.id,
-        playerName: this.playerName.trim(),
-        playerEmail: this.playerEmail.trim(),
-        registrationDate: new Date()
-      });
-      
-      this.confirmationModal.confirm(
-        'Success', 
-        `Successfully registered for "${this.tournament.name}"!`, 
-        true
-      );
-      this.resetForm();
-    } catch (error) {
-      this.confirmationModal.confirm('Error', 'Failed to register. Please try again.', true);
-    } finally {
-      this.loader.hide(id);
-    }
+  onRegistrationSuccess() {
+    this.resetForm();
   }
 
   resetForm() {
     this.tournament = null;
-    /* this.playerName = '';
-    this.playerEmail = ''; */
     this.manualTournamentId = '';
     this.showOptions = true;
     this.showScanner = false;

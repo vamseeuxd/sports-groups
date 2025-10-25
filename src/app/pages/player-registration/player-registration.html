@@ -68,44 +68,13 @@
       }
 
       @if (tournament && !showScanner && !showManualEntry && !showOptions) {
-        <div class="card mb-3">
-          <div class="card-header">
-            Tournament Details
-          </div>
-          <div class="card-body">
-            <h6>{{tournament.name}}</h6>
-            <p class="mb-1">Sport: {{tournament.sport}}</p>
-            <p class="mb-1">Start Date: {{formatDate(tournament.startDate) | date}}</p>
-            <p class="mb-0">Description: {{tournament.description}}</p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            Player Registration
-          </div>
-            <div class="card-body">
-              <div class="mb-3">
-                <label class="form-label">Player Name *</label>
-                <input type="text" class="form-control" [(ngModel)]="playerName"
-                       placeholder="Enter your full name">
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Email Address *</label>
-                <input type="email" class="form-control" [(ngModel)]="playerEmail"
-                       placeholder="Enter your email address">
-              </div>
-              <div class="d-grid gap-2">
-                <button class="btn btn-primary" (click)="registerPlayer()" 
-                        [disabled]="!playerName.trim() || !playerEmail.trim()">
-                  Register for Tournament
-                </button>
-                <button class="btn btn-secondary" (click)="resetForm()">
-                  Choose Different Tournament
-                </button>
-              </div>
-            </div>
-        </div>
+        <app-player-registration-form 
+          [tournament]="tournament"
+          [playerName]="playerName"
+          [playerEmail]="playerEmail"
+          (registrationSuccess)="onRegistrationSuccess()"
+          (resetRequested)="resetForm()">
+        </app-player-registration-form>
       }
     </div>
   </div>

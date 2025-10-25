@@ -1,31 +1,39 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlayerRegistrationService } from '../../../../services/player-registration.service';
-import { IPlayerRegistration } from '../../../../models/group.model';
+import { IPlayerRegistration, ITournament } from '../../../../models/group.model';
 import { ConfirmationModalService } from '../../../../services';
+import { PlayerRegistrationFormComponent } from '../../../../components';
 
 @Component({
   selector: 'app-registration-users',
-  imports: [CommonModule],
+  imports: [CommonModule, PlayerRegistrationFormComponent],
   templateUrl: './registration-users.html',
   styleUrl: './registration-users.scss',
 })
 export class RegistrationUsersComponent implements OnInit {
-  @Input() tournamentId!: string;
   private confirmationModal = inject(ConfirmationModalService);
   private playerRegistrationService = inject(PlayerRegistrationService);
   registrations: IPlayerRegistration[] = [];
   loading = false;
 
+  tournament = input.required<ITournament>();
+  playerName = signal<string>('');
+  playerEmail = signal<string>('');
+  showModal = false;
+
   async ngOnInit() {
-    await this.loadRegistrations();
+    const tournamentId = this.tournament()?.id;
+    if (tournamentId) {
+      await this.loadRegistrations(tournamentId);
+    }
   }
 
-  async loadRegistrations() {
+  async loadRegistrations(tournamentId: string) {
     this.loading = true;
     try {
       this.registrations = await this.playerRegistrationService.getRegistrationsByTournament(
-        this.tournamentId
+        tournamentId
       );
     } catch (error) {
       console.error('Error loading registrations:', error);
@@ -88,5 +96,28 @@ export class RegistrationUsersComponent implements OnInit {
     } catch (error) {
       console.error('Error deleting registration:', error);
     }
+  }
+
+  async onRegistrationSuccess() {
+    this.resetForm();
+    this.closeModal();
+    this.ngOnInit();
+  }
+
+  resetForm() {
+    this.playerName.set('');
+    this.playerEmail.set('');
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.resetForm();
+  }
+
+  formatDate(date: any): Date {
+    if (date && date.toDate) {
+      return date.toDate();
+    }
+    return new Date(date);
   }
 }

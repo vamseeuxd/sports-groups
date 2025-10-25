@@ -1,14 +1,14 @@
 <div class="card">
-  <div class="card-header">
-    <h5 class="mb-0"><i class="bi bi-person-plus"></i> Registration Users</h5>
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h6 class="mb-0"><i class="bi bi-person-plus me-2"></i> Players Registration ({{ registrations.length }})</h6>
   </div>
-  <div class="card-body">
+  <div class="card-body" style="max-height: calc(100dvh - 172px); overflow-y: auto;">
     <div *ngIf="loading" class="text-center">
       <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    
+
     <div *ngIf="!loading && registrations.length === 0" class="text-center text-muted">
       <i class="bi bi-inbox display-4"></i>
       <p class="mt-2">No registrations found for this tournament.</p>
@@ -16,40 +16,75 @@
 
     <div *ngIf="!loading && registrations.length > 0">
       <div class="list-group">
-        <div *ngFor="let registration of registrations" class="list-group-item">
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="flex-grow-1">
-              <h6 class="mb-1 d-flex align-items-center">
-                <i class="bi bi-person-fill me-2"></i>{{registration.playerName | titlecase}}
-                <span class="badge ms-auto" [class]="getStatusClass(registration.status)">
-                  {{(registration.status || 'pending') | titlecase}}
-                </span>
-              </h6>
-              <p class="mb-1 text-muted"><i class="bi bi-envelope-at me-2"></i>{{registration.playerEmail}}</p>
-              <small class="text-muted">{{registration.registrationDate | date:'short'}}</small>
-              <div class="btn-group btn-group-sm w-100" role="group">
-                <button *ngIf="registration.status !== 'approved'" 
-                        class="btn btn-success" 
-                        (click)="approveRegistration(registration)"
-                        title="Approve">
-                  <i class="bi bi-check-lg"></i>
-                </button>
-                <button *ngIf="registration.status !== 'rejected'" 
-                        class="btn btn-warning" 
-                        (click)="rejectRegistration(registration)"
-                        title="Reject">
-                  <i class="bi bi-x-lg"></i>
-                </button>
-                <button class="btn btn-danger" 
-                        (click)="deleteRegistration(registration)"
-                        title="Delete">
-                  <i class="bi bi-trash"></i>
-                </button>
+        @for (registration of registrations; track $index) {
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <h6 class="mb-1 d-flex align-items-center">
+                  <i class="bi bi-person-fill me-2"></i>{{ registration.playerName | titlecase }}
+                  <span class="badge ms-auto" [class]="getStatusClass(registration.status)">
+                    {{ registration.status || 'pending' | titlecase }}
+                  </span>
+                </h6>
+                <p class="mb-1 text-muted">
+                  <i class="bi bi-envelope-at me-2"></i>{{ registration.playerEmail }}
+                </p>
+                <!-- <small class="text-muted">{{ formatDate(registration.registrationDate) | date : 'short' }}</small> -->
+                <div class="btn-group btn-group-sm w-100" role="group">
+                  <button
+                    *ngIf="registration.status !== 'approved'"
+                    class="btn btn-success"
+                    (click)="approveRegistration(registration)"
+                    title="Approve"
+                  >
+                    <i class="bi bi-check-lg"></i>
+                  </button>
+                  <button
+                    *ngIf="registration.status !== 'rejected'"
+                    class="btn btn-warning"
+                    (click)="rejectRegistration(registration)"
+                    title="Reject"
+                  >
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                  <button
+                    class="btn btn-danger"
+                    (click)="deleteRegistration(registration)"
+                    title="Delete"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        }        
+      </div>      
+      <button class="btn btn-primary btn-sm mt-2 w-100" (click)="showModal = true">
+        <i class="bi bi-plus-lg"></i> Add New Players
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">New Player Registration</h6>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <app-player-registration-form
+          [tournament]="tournament()"
+          [(playerName)]="playerName"
+          [showTournamentCard]="false"
+          [(playerEmail)]="playerEmail"
+          (registrationSuccess)="onRegistrationSuccess()"
+          (resetRequested)="closeModal()"
+        />
       </div>
     </div>
   </div>
 </div>
+<div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal" (click)="closeModal()"></div>
