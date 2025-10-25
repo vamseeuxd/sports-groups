@@ -121,4 +121,8 @@ export class ManageGroup {
   navigateToTournaments(groupId: string) {
     this.router.navigate(['/manage-tournaments', groupId]);
   }
+
+  goBack() {
+    this.router.navigate(['/']);
+  }
 }

@@ -1,28 +1,38 @@
 @if (user$ | async; as user) { @if (user.email) {
-<div class="row">
-  <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-    <h4 class="text-center pt-3 pb-2">Sport Groups</h4>
-    <ul class="list-group mx-3">
-      @for (group of groups$ | async; track group.id) {
-        <app-group-item 
-          [group]="group" 
-          [isEditing]="editingId === group.id"
-          (edit)="startEdit(group.id || '')"
-          (save)="edit(group, $event)"
-          (cancel)="cancelEdit()"
-          (delete)="delete(group)"
-          (navigate)="navigateToTournaments($event)">
-        </app-group-item>
-      }
-      <app-group-form 
-        [userEmail]="user.email" 
-        (add)="add($event, user.email)">
-      </app-group-form>
-      <li class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 px-3 py-2 d-flex justify-content-between align-items-center"
-       [routerLink]="['../player-registration']">
-        Player Registrations
-      </li>
-    </ul>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        <div class="d-flex align-items-center pt-3 pb-2">
+          <button class="btn btn-outline-dark border-0 me-auto" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i> Back
+          </button>
+          <h4 class="text-center mx-auto">Sport Groups</h4>
+          <button class="btn btn-outline-dark border-0 ms-auto" style="opacity: 0;pointer-events: none;">
+            Add <i class="bi bi-plus-lg"></i> 
+          </button>
+        </div>
+        <ul class="list-group mx-3">
+          @for (group of groups$ | async; track group.id) {
+            <app-group-item 
+              [group]="group" 
+              [isEditing]="editingId === group.id"
+              (edit)="startEdit(group.id || '')"
+              (save)="edit(group, $event)"
+              (cancel)="cancelEdit()"
+              (delete)="delete(group)"
+              (navigate)="navigateToTournaments($event)">
+            </app-group-item>
+          }
+          <app-group-form 
+            [userEmail]="user.email" 
+            (add)="add($event, user.email)">
+          </app-group-form>
+          <li role="button" class="list-group-item list-group-item-primary mb-2 shadow-sm rounded-0 px-3 py-2 d-flex justify-content-between align-items-center"
+           [routerLink]="['../player-registration']">
+            Player Registrations
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
-</div>
 } }

@@ -34,49 +34,189 @@ body {
   // Reset the user agent margin.
   margin: 0;
 }
-/* You can add global styles to this file, and also import other style files */
+/* Bootstrap 5 Golden Theme */
 
-html,
-body {
+:root {
+  --theme-primary: #d9a301;
+  --theme-primary-dark: #cd9a01;
+  --theme-secondary: #554107;
+  --theme-light: #fff8e1;
+  --theme-lighter: #faf6e6;
+  --theme-accent: #f6e6b7;
+  --theme-text: #201a1b;
+  --theme-shadow: 0 0 0 0.25rem rgb(217 163 1 / 30%);
+}
+
+html, body {
   height: 100%;
   overflow: hidden;
-  background: linear-gradient(180deg, #ecb301 0%, #cd9a01 100%);
-}
-body {
+  background: linear-gradient(180deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.form-control:focus, .form-control, .form-select {
-  background-color: #faf6e6;
-  color: #7f620a;
-  border-color: #f6e6b7;
-  outline: 0;
-  box-shadow: 0 0 0 0.05rem rgb(217 163 1 / 30%);
+/* Form Controls */
+.form-control, .form-select, .form-check-input {
+  background-color: var(--theme-lighter);
+  color: var(--theme-secondary);
+  border-color: var(--theme-accent);
+  &:focus {
+    background-color: var(--theme-lighter);
+    border-color: var(--theme-primary);
+    box-shadow: var(--theme-shadow);
+  }
 }
 
+/* Buttons */
+.btn-primary {
+  --bs-btn-bg: var(--theme-primary);
+  --bs-btn-border-color: var(--theme-primary);
+  --bs-btn-hover-bg: var(--theme-primary-dark);
+  --bs-btn-hover-border-color: var(--theme-primary-dark);
+  --bs-btn-active-bg: var(--theme-secondary);
+  --bs-btn-active-border-color: var(--theme-secondary);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--theme-primary);
+  --bs-btn-border-color: var(--theme-primary);
+  --bs-btn-hover-bg: var(--theme-primary);
+  --bs-btn-hover-border-color: var(--theme-primary);
+}
+
+/* Cards */
 .card {
-  /* --bs-card-title-color: ;
-    --bs-card-subtitle-color: ; */
-  --bs-card-border-color: var(--bs-border-color-translucent);
-  --bs-card-box-shadow: 0 0 0 0.25rem rgb(217 163 1 / 30%);
-  --bs-card-cap-bg: #fff1c5;
-  --bs-card-cap-color: #201a1b;
-  --bs-card-color: #201a1b;
-  --bs-card-bg: #fff8e1;
-  color: #7f620a;
-  background-color: #fff8e1;
-  border: var(--bs-card-border-width) solid #fff8e1;
+  --bs-card-bg: var(--theme-light);
+  --bs-card-color: var(--theme-secondary);
+  --bs-card-border-color: var(--theme-accent);
+  --bs-card-cap-bg: var(--theme-accent);
+  --bs-card-cap-color: var(--theme-text);
+  box-shadow: var(--theme-shadow);
 }
 
-.modal {
-  --bs-modal-bg: var(--bs-warning-bg-subtle);
-  --bs-modal-color: #7f620a;
-  /* 
-  --bs-modal-border-color: var(--bs-border-color-translucent);
-  --bs-modal-box-shadow: var(--bs-box-shadow-sm);
-  --bs-modal-header-border-color: var(--bs-border-color);
-  --bs-modal-footer-bg: var(--bs-warning-bg);
-  --bs-modal-footer-border-color: var(--bs-border-color);
-  --bs-modal-footer-border-width: var(--bs-border-width); */
+/* Modals */
+.modal-content {
+  background-color: var(--theme-light);
+  color: var(--theme-secondary);
+  border-color: var(--theme-accent);
+}
+
+.modal-header {
+  background-color: var(--theme-accent);
+  color: var(--theme-text);
+  border-bottom-color: var(--theme-primary);
+}
+
+/* Navigation */
+.navbar {
+  --bs-navbar-bg: var(--theme-light);
+  --bs-navbar-color: var(--theme-secondary);
+  --bs-navbar-brand-color: var(--theme-primary);
+  --bs-navbar-toggler-border-color: var(--theme-accent);
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--theme-primary);
+}
+
+/* Tables */
+.table {
+  --bs-table-bg: var(--theme-light);
+  --bs-table-color: var(--theme-secondary);
+  --bs-table-striped-bg: var(--theme-lighter);
+  --bs-table-hover-bg: var(--theme-accent);
+}
+
+/* Alerts */
+.alert-primary {
+  --bs-alert-bg: var(--theme-lighter);
+  --bs-alert-color: var(--theme-secondary);
+  --bs-alert-border-color: var(--theme-accent);
+}
+
+/* Badges */
+.badge {
+  --bs-badge-bg: var(--theme-primary);
+}
+
+/* Progress */
+.progress {
+  --bs-progress-bg: var(--theme-accent);
+}
+
+.progress-bar {
+  --bs-progress-bar-bg: var(--theme-primary);
+}
+
+/* Dropdowns */
+.dropdown-menu {
+  --bs-dropdown-bg: var(--theme-light);
+  --bs-dropdown-color: var(--theme-secondary);
+  --bs-dropdown-border-color: var(--theme-accent);
+  --bs-dropdown-link-hover-bg: var(--theme-lighter);
+}
+
+/* Pagination */
+.pagination {
+  --bs-pagination-bg: var(--theme-light);
+  --bs-pagination-color: var(--theme-secondary);
+  --bs-pagination-border-color: var(--theme-accent);
+  --bs-pagination-hover-bg: var(--theme-lighter);
+  --bs-pagination-active-bg: var(--theme-primary);
+  --bs-pagination-active-border-color: var(--theme-primary);
+}
+
+/* Accordion */
+.accordion {
+  --bs-accordion-bg: var(--theme-light);
+  --bs-accordion-color: var(--theme-secondary);
+  --bs-accordion-border-color: var(--theme-accent);
+  --bs-accordion-btn-bg: var(--theme-accent);
+  --bs-accordion-active-bg: var(--theme-lighter);
+}
+
+/* Offcanvas */
+.offcanvas {
+  --bs-offcanvas-bg: var(--theme-light);
+  --bs-offcanvas-color: var(--theme-secondary);
+}
+
+/* Toast */
+.toast {
+  --bs-toast-bg: var(--theme-light);
+  --bs-toast-color: var(--theme-secondary);
+  --bs-toast-border-color: var(--theme-accent);
+}
+
+/* Tooltip & Popover */
+.tooltip-inner {
+  background-color: var(--theme-secondary);
+}
+
+.popover {
+  --bs-popover-bg: var(--theme-light);
+  --bs-popover-border-color: var(--theme-accent);
+}
+
+/* List Group */
+.list-group-item {
+  --bs-list-group-bg: var(--theme-light);
+  --bs-list-group-color: var(--theme-secondary);
+  --bs-list-group-border-color: var(--theme-accent);
+  --bs-list-group-hover-bg: var(--theme-lighter);
+  --bs-list-group-active-bg: var(--theme-primary);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  --bs-breadcrumb-bg: var(--theme-accent);
+}
+
+/* Spinners */
+.spinner-border {
+  color: var(--theme-primary);
+}
+
+.spinner-grow {
+  color: var(--theme-primary);
 }

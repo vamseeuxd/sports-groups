@@ -8,7 +8,7 @@ import { IGroupRole } from '../../models/group.model';
   imports: [CommonModule],
   template: `
     <li [class.py-2]="!isEditing" [class.p-1]="isEditing"
-        class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 p-1 d-flex justify-content-between align-items-center"
+        class="list-group-item list-group-item-primary mb-2 shadow-sm rounded-0 p-1 d-flex justify-content-between align-items-center"
         [style.cursor]="!isEditing ? 'pointer' : 'default'"
         (click)="!isEditing && navigateToTournaments(group.id)">
       

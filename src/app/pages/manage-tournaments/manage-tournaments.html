@@ -1,59 +1,71 @@
 @if (user$ | async; as user) { @if (user.email) {
-<div class="row" (click)="hideQRCode()">
-  <div class="col-md-10 offset-md-1">
-    <div class="d-flex align-items-center pt-3 pb-2">
-      <button class="btn btn-outline-dark border-0 me-auto" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i> Back
-      </button>
-      <h4 class="text-center mx-auto">Tournaments</h4>
-      <button class="btn btn-outline-dark border-0 ms-auto" (click)="openAddModal()">
-        Add <i class="bi bi-plus-lg"></i> 
-      </button>
-    </div>
-    <ul class="list-group mx-3">
-      @for (tournament of tournaments$ | async; track tournament.id) {
-        <li class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 p-1">
-          <div class="position-relative px-1" (click)="$event.stopPropagation()">
-            <div class="w-100">
-              <p class="mb-0 py-1 fw-medium fs-6">{{tournament.name}}</p>
-              <p class="mb-0 pb-1 border-bottom border-warning position-relative">
-                ID : <span class="text-secondary fw-medium" style="cursor: pointer; text-decoration: underline;" 
-                          (click)="showQRCode(tournament.id!)">{{tournament.id}}</span>
-                
-                @if (showQRPopover === tournament.id) {
-                  <div class="position-absolute bg-white border rounded shadow p-2" 
-                       style="top: 100%; left: 0; z-index: 1000; min-width: 220px;">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <small class="fw-bold">Tournament QR Code</small>
-                      <button class="btn-close btn-sm" (click)="hideQRCode()"></button>
-                    </div>
-                    <div class="text-center">
-                      <img [id]="'qr-' + tournament.id" class="img-fluid" style="max-width: 180px; height: auto; display: block;" alt="Tournament QR Code" />
-                      <div class="mt-2">
-                        <small class="text-muted">Scan to register for tournament</small>
+  <div class="container-fluid">
+    <div class="row" (click)="hideQRCode()">
+      <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        <div class="d-flex align-items-center pt-3 pb-2">
+          <button class="btn btn-outline-dark border-0 me-auto" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i> Back
+          </button>
+          <h4 class="text-center mx-auto">Tournaments</h4>
+          <button class="btn btn-outline-dark border-0 ms-auto" (click)="openAddModal()">
+            Add <i class="bi bi-plus-lg"></i> 
+          </button>
+        </div>
+        <ul class="list-group mx-3">
+          @for (tournament of tournaments$ | async; track tournament.id) {
+            <li class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 p-1">
+              <div class="position-relative px-1" (click)="$event.stopPropagation()">
+                <div class="w-100">
+                  <p class="mb-0 py-1 fw-medium fs-6">{{tournament.name}}</p>
+                  <p class="mb-0 pb-1 border-bottom border-warning position-relative">
+                    ID : <span class="text-secondary fw-medium" style="cursor: pointer; text-decoration: underline;" (click)="showQRCode(tournament.id!)">{{tournament.id}}</span>
+                    
+                    @if (showQRPopover === tournament.id) {
+                      <div class="position-absolute" style="top: 100%; left: 0; z-index: 1000; min-width: 220px;">
+                        <div class="card shadow">
+                          <div class="card-header d-flex align-items-center justify-content-between">
+                            Tournament QR Code 
+                            <button class="btn btn-secondary btn-sm" (click)="hideQRCode()"><i class="bi bi-x"></i></button>                        
+                          </div>
+                          <div class="card-body">
+                            <img [id]="'qr-' + tournament.id" class="img-fluid" style="max-width: 180px; height: auto; display: block;" alt="Tournament QR Code" />
+                            <div class="mt-2">
+                              <small class="text-muted">Scan to register for tournament</small>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- <div class="d-flex justify-content-between align-items-center mb-2">
+                          <small class="fw-bold">Tournament QR Code</small>
+                          <button class="btn-close btn-sm" (click)="hideQRCode()"></button>
+                        </div>
+                        <div class="text-center">
+                          <img [id]="'qr-' + tournament.id" class="img-fluid" style="max-width: 180px; height: auto; display: block;" alt="Tournament QR Code" />
+                          <div class="mt-2">
+                            <small class="text-muted">Scan to register for tournament</small>
+                          </div>
+                        </div> -->
                       </div>
-                    </div>
+                    }
+                  </p>
+                  <!-- <p class="mb-0 pb-2 border-bottom border-warning">{{tournament.description}}</p> -->
+                  <!-- <p class="ps-2 border-bottom py-1 pb-2 mb-1 border-warning">{{tournament.description}}</p> -->
+                  <div class="mt-2 row text-center">
+                    <span class="col text-warning-emphasis me-2 border-end border-warning">{{tournament.sport}}</span>
+                    <span class="col text-warning-emphasis me-2">{{formatDateForDisplay(tournament.startDate) | date}}</span>
+                  </div> 
+                </div>
+                <div class="position-absolute top-0 end-0 mt-0 me-1">
+                  <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                    <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-pencil"></i> </button>
+                    <!-- <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-qr-code-scan"></i> </button> -->
+                    <button type="button" class="btn btn-sm btn-danger" (click)="delete(tournament)"> <i class="bi bi-trash3-fill"></i> </button>
                   </div>
-                }
-              </p>
-              <!-- <p class="mb-0 pb-2 border-bottom border-warning">{{tournament.description}}</p> -->
-              <!-- <p class="ps-2 border-bottom py-1 pb-2 mb-1 border-warning">{{tournament.description}}</p> -->
-              <div class="mt-2 row text-center">
-                <span class="col text-warning-emphasis me-2 border-end border-warning">{{tournament.sport}}</span>
-                <span class="col text-warning-emphasis me-2">{{formatDateForDisplay(tournament.startDate) | date}}</span>
-              </div> 
-            </div>
-            <div class="position-absolute top-0 end-0 mt-0 me-1">
-              <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-pencil"></i> </button>
-                <!-- <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-qr-code-scan"></i> </button> -->
-                <button type="button" class="btn btn-sm btn-danger" (click)="delete(tournament)"> <i class="bi bi-trash3-fill"></i> </button>
+                </div>
               </div>
-            </div>
-          </div>
-        </li>
-      }
-    </ul>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
   </div>
-</div>
 } }
