@@ -2,8 +2,12 @@
   "name": "sports-groups",
   "short_name": "sports-groups",
   "display": "standalone",
+  "background_color": "#d9a301",
+  "theme_color": "#d9a301",
+  "orientation": "portrait",
   "scope": "./",
   "start_url": "./",
+  "categories": ["games", "sports"],
   "icons": [
     {
       "src": "icons/icon-72x72.png",
