@@ -62,7 +62,7 @@ export class ManageGroup {
     if (!group.id) return;
     const confirmed = await this.confirmationModal.confirm(
       '<i class="bi bi-trash3-fill"></i> Delete Group',
-      `${APP_CONSTANTS.MESSAGES.CONFIRMATIONS.DELETE_GROUP} "${group.name}"?`
+      `<h5>${APP_CONSTANTS.MESSAGES.CONFIRMATIONS.DELETE_GROUP} "${group.name}"?</h5>`
     );
     if (!confirmed) return;
     

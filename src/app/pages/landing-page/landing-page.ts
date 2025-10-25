@@ -4,6 +4,7 @@ import { Auth, GoogleAuthProvider, signInWithPopup, User, user } from '@angular/
 import { Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { LoaderService } from '../../services/loader.service';
+import { ConfirmationModalService } from '../../services';
 
 @Component({
   selector: 'app-landing-page',
@@ -12,8 +13,8 @@ import { LoaderService } from '../../services/loader.service';
   styleUrl: './landing-page.scss',
 })
 export class LandingPage {
-  @HostBinding('class') hostClass =
-    'd-flex flex-column justify-content-center align-items-center masthead';
+  @HostBinding('class') hostClass = 'd-flex flex-column justify-content-center align-items-center masthead';
+  private confirmationModal = inject(ConfirmationModalService);
   private auth = inject(Auth);
   user$ = user(this.auth);
   userSubscription: Subscription | undefined;
@@ -32,5 +33,14 @@ export class LandingPage {
       const credential = GoogleAuthProvider.credentialFromResult(result);
       const token = credential?.accessToken;
     });
+  }
+
+  async logout() {
+    const confirmed = await this.confirmationModal.confirm(
+          '<i class="bi bi-box-arrow-right"></i> Logout',
+          `<h5 class="text-center m-0 p-0 mt-2">Are you sure you want to logout?</h5>`
+        );
+        if (!confirmed) return;
+    this.auth.signOut();
   }
 }

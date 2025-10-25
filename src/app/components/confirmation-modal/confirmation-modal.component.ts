@@ -15,7 +15,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
       <button type="button" class="btn btn-primary" (click)="confirm()">OK</button>
       }@else {
       <button type="button" class="btn btn-secondary" (click)="decline()">Cancel</button>
-      <button type="button" class="btn btn-danger" (click)="confirm()">Confirm</button>
+      <button type="button" class="btn btn-primary" (click)="confirm()">Confirm</button>
       }
     </div>
   `,

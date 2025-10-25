@@ -81,7 +81,7 @@ export class ManageTournaments {
     if (!tournament.id) return;
     const confirmed = await this.confirmationModal.confirm(
       '<i class="bi bi-trash3-fill"></i> Delete Tournament',
-      `Are you sure you want to delete "${tournament.name}"?`
+      `<h5>Are you sure you want to delete "${tournament.name}"?</h5>`
     );
     if (!confirmed) return;
     
