@@ -32,6 +32,8 @@ export interface IPlayerRegistration {
   tournamentId: string;
   playerName: string;
   playerEmail: string;
+  gender: 'male' | 'female' | 'other';
+  mobileNumber: string;
   registrationDate: Date;
   status?: 'pending' | 'approved' | 'rejected';
   id?: string;

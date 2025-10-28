@@ -70,8 +70,6 @@
       @if (tournament && !showScanner && !showManualEntry && !showOptions) {
         <app-player-registration-form 
           [tournament]="tournament"
-          [playerName]="playerName"
-          [playerEmail]="playerEmail"
           (registrationSuccess)="onRegistrationSuccess()"
           (resetRequested)="resetForm()">
         </app-player-registration-form>

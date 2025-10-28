@@ -60,9 +60,14 @@
           </div>
         }        
       </div>      
-      <button class="btn btn-primary btn-sm mt-2 w-100" (click)="showModal = true">
-        <i class="bi bi-plus-lg"></i> Add New Players
-      </button>
+      <div class="d-grid gap-2 mt-2">
+        <button class="btn btn-primary btn-sm" (click)="showModal = true">
+          <i class="bi bi-plus-lg"></i> Add New Player
+        </button>
+        <button class="btn btn-outline-primary btn-sm" (click)="showBulkModal = true">
+          <i class="bi bi-upload"></i> Bulk Upload CSV
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -88,3 +93,65 @@
   </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal" (click)="closeModal()"></div>
+
+<div class="modal fade" [class.show]="showBulkModal" [style.display]="showBulkModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Bulk Upload Players</h6>
+        <button type="button" class="btn-close" (click)="closeBulkModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Upload CSV File</label>
+          <input type="file" class="form-control" accept=".csv" (change)="onFileSelected($event)" #fileInput>
+          <div class="form-text">
+            CSV should contain columns: playerName, playerEmail, gender, mobileNumber
+            <br>
+            <button type="button" class="btn btn-link p-0 text-primary" (click)="downloadSampleCSV()">Download sample CSV</button>
+          </div>
+        </div>
+        
+        @if (csvErrors.length > 0) {
+          <div class="alert alert-danger">
+            <h6>Validation Errors:</h6>
+            <ul class="mb-0">
+              @for (error of csvErrors; track $index) {
+                <li>{{ error }}</li>
+              }
+            </ul>
+          </div>
+        }
+        
+        @if (csvData.length > 0 && csvErrors.length === 0) {
+          <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i> {{ csvData.length }} valid players found
+          </div>
+          <div class="list-group" style="max-height: 300px; overflow-y: auto;">
+            @for (player of csvData; track $index) {
+              <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">{{ player.playerName }}</h6>
+                    <p class="mb-1 text-muted small">{{ player.playerEmail }}</p>
+                    <small class="text-muted">{{ player.gender | titlecase }} • {{ player.mobileNumber }}</small>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeBulkModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="uploadPlayers()" [disabled]="csvData.length === 0 || csvErrors.length > 0 || uploading">
+          @if (uploading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          Upload {{ csvData.length }} Players
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showBulkModal" *ngIf="showBulkModal" (click)="closeBulkModal()"></div>

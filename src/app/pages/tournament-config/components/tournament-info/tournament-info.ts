@@ -19,12 +19,15 @@ export class TournamentInfoComponent implements OnInit {
 
   ngOnInit() {
     this.tournament$ = this.tournamentService.getTournamentById(this.tournamentId).pipe(
-      map(tournament => ({
-        ...tournament,
-        startDate: tournament.startDate instanceof Timestamp 
-          ? tournament.startDate.toDate() 
-          : tournament.startDate
-      }))
+      map(tournament => {
+        if (!tournament) return tournament;
+        return {
+          ...tournament,
+          startDate: tournament.startDate instanceof Timestamp 
+            ? tournament.startDate.toDate() 
+            : tournament.startDate
+        };
+      })
     );
   }
 }

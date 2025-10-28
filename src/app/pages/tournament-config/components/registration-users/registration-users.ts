@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlayerRegistrationService } from '../../../../services/player-registration.service';
+import { ValidationService } from '../../../../services/validation.service';
+import { LoaderService } from '../../../../services/loader.service';
 import { IPlayerRegistration, ITournament } from '../../../../models/group.model';
 import { ConfirmationModalService } from '../../../../services';
 import { PlayerRegistrationFormComponent } from '../../../../components';
@@ -14,6 +16,8 @@ import { PlayerRegistrationFormComponent } from '../../../../components';
 export class RegistrationUsersComponent implements OnInit {
   private confirmationModal = inject(ConfirmationModalService);
   private playerRegistrationService = inject(PlayerRegistrationService);
+  private validationService = inject(ValidationService);
+  private loader = inject(LoaderService);
   registrations: IPlayerRegistration[] = [];
   loading = false;
 
@@ -21,6 +25,10 @@ export class RegistrationUsersComponent implements OnInit {
   playerName = signal<string>('');
   playerEmail = signal<string>('');
   showModal = false;
+  showBulkModal = false;
+  csvData: any[] = [];
+  csvErrors: string[] = [];
+  uploading = false;
 
   async ngOnInit() {
     const tournamentId = this.tournament()?.id;
@@ -49,11 +57,15 @@ export class RegistrationUsersComponent implements OnInit {
       `<h5>Are you sure you want to approve this registration?</h5>`
     );
     if (!confirmed) return;
+    
+    const id = this.loader.show();
     try {
       await this.playerRegistrationService.updateRegistrationStatus(registration.id, 'approved');
       registration.status = 'approved';
     } catch (error) {
       console.error('Error approving registration:', error);
+    } finally {
+      this.loader.hide(id);
     }
   }
 
@@ -64,11 +76,15 @@ export class RegistrationUsersComponent implements OnInit {
       `<h5>Are you sure you want to reject this registration?</h5>`
     );
     if (!confirmed) return;
+    
+    const id = this.loader.show();
     try {
       await this.playerRegistrationService.updateRegistrationStatus(registration.id, 'rejected');
       registration.status = 'rejected';
     } catch (error) {
       console.error('Error rejecting registration:', error);
+    } finally {
+      this.loader.hide(id);
     }
   }
 
@@ -90,11 +106,15 @@ export class RegistrationUsersComponent implements OnInit {
       `<h5>Are you sure you want to delete this registration?</h5>`
     );
     if (!confirmed) return;
+    
+    const id = this.loader.show();
     try {
       await this.playerRegistrationService.deleteRegistration(registration.id);
       this.registrations = this.registrations.filter((r) => r.id !== registration.id);
     } catch (error) {
       console.error('Error deleting registration:', error);
+    } finally {
+      this.loader.hide(id);
     }
   }
 
@@ -119,5 +139,92 @@ export class RegistrationUsersComponent implements OnInit {
       return date.toDate();
     }
     return new Date(date);
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.name.endsWith('.csv')) {
+      this.csvErrors = ['Please select a CSV file'];
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const csvText = e.target?.result as string;
+      this.processCsvFile(csvText);
+    };
+    reader.readAsText(file);
+  }
+
+  processCsvFile(csvText: string) {
+    try {
+      const parsedData = this.validationService.parseCSV(csvText);
+      const validation = this.validationService.validateCSVData(parsedData);
+      
+      this.csvErrors = validation.errors;
+      this.csvData = validation.validRows;
+    } catch (error) {
+      this.csvErrors = ['Error parsing CSV file. Please check the format.'];
+      this.csvData = [];
+    }
+  }
+
+  async uploadPlayers() {
+    if (this.csvData.length === 0 || !this.tournament()?.id) return;
+    
+    const id = this.loader.show();
+    this.uploading = true;
+    try {
+      const result = await this.playerRegistrationService.bulkRegisterPlayers(
+        this.tournament().id!,
+        this.csvData
+      );
+      
+      let message = `Successfully registered ${result.success} players.`;
+      if (result.failed > 0) {
+        message += `\n${result.failed} failed registrations.`;
+        if (result.errors.length > 0) {
+          message += `\nErrors:\n${result.errors.join('\n')}`;
+        }
+      }
+      
+      this.confirmationModal.confirm('Upload Complete', message, true);
+      this.closeBulkModal();
+      await this.ngOnInit();
+    } catch (error) {
+      this.confirmationModal.confirm('Upload Failed', 'Failed to upload players. Please try again.', true);
+    } finally {
+      this.uploading = false;
+      this.loader.hide(id);
+    }
+  }
+
+  closeBulkModal() {
+    this.showBulkModal = false;
+    this.csvData = [];
+    this.csvErrors = [];
+  }
+
+  downloadSampleCSV() {
+    const csvContent = `playerName,playerEmail,gender,mobileNumber
+John Smith,john.smith@email.com,male,+1234567890
+Jane Doe,jane.doe@email.com,female,9876543210
+Mike Johnson,mike.johnson@email.com,male,5551234567
+Sarah Wilson,sarah.wilson@email.com,female,+447123456789
+Alex Chen,alex.chen@email.com,other,1234567890`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'sample-players.csv');
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 }

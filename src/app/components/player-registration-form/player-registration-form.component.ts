@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LoaderService } from '../../services/loader.service';
 import { ConfirmationModalService } from '../../services/confirmation-modal.service';
 import { PlayerRegistrationService } from '../../services/player-registration.service';
+import { ValidationService } from '../../services/validation.service';
 import { ITournament } from '../../models/group.model';
 
 @Component({
@@ -21,14 +22,34 @@ export class PlayerRegistrationFormComponent {
   
   playerName = model<string>('');
   playerEmail = model<string>('');
+  playerGender = model<'male' | 'female' | 'other'>('male');
+  playerMobile = model<string>('');
 
   private loader = inject(LoaderService);
   private confirmationModal = inject(ConfirmationModalService);
   private playerRegistrationService = inject(PlayerRegistrationService);
+  validationService = inject(ValidationService);
+
+  validationErrors: string[] = [];
+
+  validateForm(): boolean {
+    this.validationErrors = this.validationService.validatePlayerRegistration({
+      playerName: this.playerName(),
+      playerEmail: this.playerEmail(),
+      mobileNumber: this.playerMobile(),
+      gender: this.playerGender()
+    });
+    return this.validationErrors.length === 0;
+  }
 
   async registerPlayer() {
-    if (!this.tournament?.id || !this.playerName().trim() || !this.playerEmail().trim()) {
-      this.confirmationModal.confirm('Error', 'Please fill in all required fields.', true);
+    if (!this.tournament?.id) {
+      this.confirmationModal.confirm('Error', 'Tournament information is missing.', true);
+      return;
+    }
+
+    if (!this.validateForm()) {
+      this.confirmationModal.confirm('Validation Error', this.validationErrors.join('\n'), true);
       return;
     }
 
@@ -48,6 +69,8 @@ export class PlayerRegistrationFormComponent {
         tournamentId: this.tournament.id,
         playerName: this.playerName().trim(),
         playerEmail: this.playerEmail().trim(),
+        gender: this.playerGender(),
+        mobileNumber: this.playerMobile().trim(),
         registrationDate: new Date()
       });
       

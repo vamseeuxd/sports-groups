@@ -6,16 +6,12 @@
 @use '@angular/material' as mat;
 
 html {
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$rose-palette,
+  @include mat.theme((color: (primary: mat.$rose-palette,
         tertiary: mat.$red-palette,
       ),
       typography: Roboto,
       density: 0,
-    )
-  );
+    ));
 }
 
 body {
@@ -34,6 +30,7 @@ body {
   // Reset the user agent margin.
   margin: 0;
 }
+
 /* Bootstrap 5 Golden Theme */
 
 :root {
@@ -47,7 +44,8 @@ body {
   --theme-shadow: 0 0 0 0.25rem rgb(217 163 1 / 30%);
 }
 
-html, body {
+html,
+body {
   height: 100%;
   overflow: hidden;
   background: linear-gradient(180deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
@@ -56,10 +54,13 @@ html, body {
 }
 
 /* Form Controls */
-.form-control, .form-select, .form-check-input {
+.form-control,
+.form-select,
+.form-check-input {
   background-color: var(--theme-lighter);
   color: var(--theme-secondary);
   border-color: var(--theme-accent);
+
   &:focus {
     background-color: var(--theme-lighter);
     border-color: var(--theme-primary);
@@ -75,6 +76,9 @@ html, body {
   --bs-btn-hover-border-color: var(--theme-primary-dark);
   --bs-btn-active-bg: var(--theme-secondary);
   --bs-btn-active-border-color: var(--theme-secondary);
+  --bs-btn-disabled-bg: #d8b859;
+  --bs-btn-disabled-border-color: #d8b859;
+  --bs-btn-disabled-color: #998444;
 }
 
 .btn-outline-primary {

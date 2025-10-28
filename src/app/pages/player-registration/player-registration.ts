@@ -1,5 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
@@ -18,7 +19,7 @@ import { PlayerRegistrationFormComponent } from '../../components';
   templateUrl: './player-registration.html',
   styleUrl: './player-registration.scss'
 })
-export class PlayerRegistration implements OnInit {
+export class PlayerRegistration implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private loader = inject(LoaderService);
@@ -26,6 +27,7 @@ export class PlayerRegistration implements OnInit {
   private playerRegistrationService = inject(PlayerRegistrationService);
   private userService = inject(UserService);
   user$ = this.userService.user$;
+  private userSubscription?: Subscription;
 
   showOptions = true;
   showScanner = false;
@@ -33,6 +35,8 @@ export class PlayerRegistration implements OnInit {
   tournament: ITournament | null = null;
   playerName = '';
   playerEmail = '';
+  playerGender: 'male' | 'female' | 'other' = 'male';
+  playerMobile = '';
   manualTournamentId = '';
   scannerEnabled = true;
   allowedFormats = [BarcodeFormat.QR_CODE];
@@ -42,7 +46,7 @@ export class PlayerRegistration implements OnInit {
     if (tournamentId) {
       this.loadTournamentFromRoute(tournamentId);
     }
-    this.user$.subscribe(user => {
+    this.userSubscription = this.user$.subscribe(user => {
       if (user) {
         this.playerName = user.displayName || '';
         this.playerEmail = user.email || '';
@@ -79,7 +83,7 @@ export class PlayerRegistration implements OnInit {
 
   async loadTournamentManually() {
     if (!this.manualTournamentId.trim()) return;
-    
+
     const id = this.loader.show();
     try {
       this.tournament = await this.playerRegistrationService.getTournamentById(this.manualTournamentId.trim());
@@ -97,10 +101,10 @@ export class PlayerRegistration implements OnInit {
 
   async onCodeResult(result: string) {
     if (!result) return;
-    
+
     this.scannerEnabled = false;
     const id = this.loader.show();
-    
+
     try {
       this.tournament = await this.playerRegistrationService.getTournamentById(result);
       if (this.tournament) {
@@ -146,5 +150,9 @@ export class PlayerRegistration implements OnInit {
       return date.toDate();
     }
     return new Date(date);
+  }
+
+  ngOnDestroy() {
+    this.userSubscription?.unsubscribe();
   }
 }

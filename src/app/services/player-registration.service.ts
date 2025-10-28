@@ -66,4 +66,42 @@ export class PlayerRegistrationService {
     const registrationRef = doc(this.registrationsCollection, registrationId);
     await deleteDoc(registrationRef);
   }
+
+  async bulkRegisterPlayers(tournamentId: string, players: any[]): Promise<{ success: number; failed: number; errors: string[] }> {
+    const results = { success: 0, failed: 0, errors: [] as string[] };
+    
+    for (const player of players) {
+      try {
+        const isAlreadyRegistered = await this.checkExistingRegistration(tournamentId, player.playerEmail);
+        
+        if (isAlreadyRegistered) {
+          results.failed++;
+          results.errors.push(`${player.playerName} (${player.playerEmail}) is already registered`);
+          continue;
+        }
+        
+        const now = new Date();
+        await addDoc(this.registrationsCollection, {
+          tournamentId,
+          playerName: player.playerName,
+          playerEmail: player.playerEmail,
+          gender: player.gender,
+          mobileNumber: player.mobileNumber,
+          registrationDate: now,
+          status: 'approved',
+          createdBy: 'bulk-upload',
+          createdOn: now,
+          lastUpdatedBy: 'bulk-upload',
+          lastUpdatedOn: now
+        });
+        
+        results.success++;
+      } catch (error) {
+        results.failed++;
+        results.errors.push(`Failed to register ${player.playerName}: ${error}`);
+      }
+    }
+    
+    return results;
+  }
 }

@@ -18,7 +18,13 @@
         class="form-control"
         [(ngModel)]="playerName"
         placeholder="Enter your full name"
+        [class.is-invalid]="playerName() && !validationService.isValidPlayerName(playerName())"
       />
+      @if (playerName() && !validationService.isValidPlayerName(playerName())) {
+        <div class="invalid-feedback d-block">
+          Name must be 2-50 characters and contain only letters and spaces
+        </div>
+      }
     </div>
     <div class="mb-3">
       <label class="form-label">Email Address *</label>
@@ -27,13 +33,42 @@
         class="form-control"
         [(ngModel)]="playerEmail"
         placeholder="Enter your email address"
+        [class.is-invalid]="playerEmail() && !validationService.isValidEmail(playerEmail())"
       />
+      @if (playerEmail() && !validationService.isValidEmail(playerEmail())) {
+        <div class="invalid-feedback d-block">
+          Please enter a valid email address
+        </div>
+      }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Gender *</label>
+      <select class="form-control" [(ngModel)]="playerGender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Mobile Number *</label>
+      <input
+        type="tel"
+        class="form-control"
+        [(ngModel)]="playerMobile"
+        placeholder="Enter your mobile number"
+        [class.is-invalid]="playerMobile() && !validationService.isValidMobileNumber(playerMobile())"
+      />
+      @if (playerMobile() && !validationService.isValidMobileNumber(playerMobile())) {
+        <div class="invalid-feedback d-block">
+          Mobile number must be 10-15 digits
+        </div>
+      }
     </div>
     <div class="d-grid gap-2">
       <button
         class="btn btn-primary"
         (click)="registerPlayer()"
-        [disabled]="!playerName().trim() || !playerEmail().trim()"
+        [disabled]="!validateForm()"
       >
         Register for Tournament
       </button>
@@ -53,7 +88,13 @@
     class="form-control"
     [(ngModel)]="playerName"
     placeholder="Enter your full name"
+    [class.is-invalid]="playerName() && !validationService.isValidPlayerName(playerName())"
   />
+  @if (playerName() && !validationService.isValidPlayerName(playerName())) {
+    <div class="invalid-feedback d-block">
+      Name must be 2-50 characters and contain only letters and spaces
+    </div>
+  }
 </div>
 <div class="mb-3">
   <label class="form-label">Email Address *</label>
@@ -62,13 +103,42 @@
     class="form-control"
     [(ngModel)]="playerEmail"
     placeholder="Enter your email address"
+    [class.is-invalid]="playerEmail() && !validationService.isValidEmail(playerEmail())"
   />
+  @if (playerEmail() && !validationService.isValidEmail(playerEmail())) {
+    <div class="invalid-feedback d-block">
+      Please enter a valid email address
+    </div>
+  }
+</div>
+<div class="mb-3">
+  <label class="form-label">Gender *</label>
+  <select class="form-control" [(ngModel)]="playerGender">
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+    <option value="other">Other</option>
+  </select>
+</div>
+<div class="mb-3">
+  <label class="form-label">Mobile Number *</label>
+  <input
+    type="tel"
+    class="form-control"
+    [(ngModel)]="playerMobile"
+    placeholder="Enter your mobile number"
+    [class.is-invalid]="playerMobile() && !validationService.isValidMobileNumber(playerMobile())"
+  />
+  @if (playerMobile() && !validationService.isValidMobileNumber(playerMobile())) {
+    <div class="invalid-feedback d-block">
+      Mobile number must be 10-15 digits
+    </div>
+  }
 </div>
 <div class="d-grid gap-2">
   <button
     class="btn btn-primary"
     (click)="registerPlayer()"
-    [disabled]="!playerName().trim() || !playerEmail().trim()"
+    [disabled]="!validateForm()"
   >
     Register for Tournament
   </button>

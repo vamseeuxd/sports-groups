@@ -29,26 +29,8 @@
             <app-registration-users [tournament]="tournament"></app-registration-users>
           }
         }
-      </div>
-
-      <!-- Tabs -->
-      <!-- <ul class="nav nav-pills nav-justified  mt-3">
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')">
-            <i class="bi bi-info-circle"></i> Info
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'registrations'" (click)="setActiveTab('registrations')">
-            <i class="bi bi-person-plus"></i> Registrations
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'teams'" (click)="setActiveTab('teams')">
-            <i class="bi bi-people"></i> Teams
-          </button>
-        </li>
-      </ul> -->
+      </div> 
+      
       <nav class="nav nav-pills nav-justified nav-fill mt-3 bg-warning p-1 rounded">
         <a class="nav-link text-dark" [class.text-white]="activeTab === 'info'" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')"><i class="bi bi-info-circle"></i> Info</a>
         <a class="nav-link text-dark" [class.text-white]="activeTab === 'registrations'" [class.active]="activeTab === 'registrations'" (click)="setActiveTab('registrations')"><i class="bi bi-person-plus"></i> Players</a>
