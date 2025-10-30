@@ -30,4 +30,12 @@ export class TournamentInfoComponent implements OnInit {
       })
     );
   }
+
+  copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text).then(() => {
+      // Could add a toast notification here
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  }
 }

@@ -1,23 +1,81 @@
-<div class="card">
-  <div class="card-header">
-    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Tournament Information</h5>
+<div class="tournament-card">
+  <div class="tournament-header">
+    <div class="header-content">
+      <i class="bi bi-trophy-fill tournament-icon"></i>
+      <h4 class="tournament-title">Tournament Information</h4>
+    </div>
   </div>
-  <div class="card-body">
-    @if (tournament$ | async; as tournament) {
-      <div class="row">
-        <div class="col-md-6">
-          <p><strong>Name:</strong> {{tournament.name}}</p>
-          <p><strong>Sport:</strong> {{tournament.sport}}</p>
-          <p><strong>Start Date:</strong> {{tournament.startDate | date}}</p>
+  
+  @if (tournament$ | async; as tournament) {
+    <div class="tournament-body">
+      <div class="info-grid">
+        <div class="info-item" (click)="copyToClipboard(tournament.name)">
+          <div class="info-icon">
+            <i class="bi bi-trophy"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Tournament Name</span>
+            <span class="info-value">{{tournament.name}}</span>
+          </div>
         </div>
-        <div class="col-md-6">
-          <p><strong>Tournament ID:</strong> {{tournamentId}}</p>
-          <p><strong>Group ID:</strong> {{tournament.groupId}}</p>
-          <p><strong>Description:</strong> {{tournament.description}}</p>
+        
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="bi bi-controller"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Sport</span>
+            <span class="info-value sport-badge">{{tournament.sport}}</span>
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="bi bi-calendar-event"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Start Date</span>
+            <span class="info-value">{{tournament.startDate | date:'MMM dd, yyyy'}}</span>
+          </div>
+        </div>
+        
+        <div class="info-item" (click)="copyToClipboard(tournamentId)">
+          <div class="info-icon">
+            <i class="bi bi-hash"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Tournament ID</span>
+            <span class="info-value id-value">{{tournamentId}}</span>
+          </div>
+        </div>
+        
+        <div class="info-item" (click)="copyToClipboard(tournament.groupId)">
+          <div class="info-icon">
+            <i class="bi bi-people"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Group ID</span>
+            <span class="info-value id-value">{{tournament.groupId}}</span>
+          </div>
+        </div>
+        
+        <div class="info-item description-item">
+          <div class="info-icon">
+            <i class="bi bi-file-text"></i>
+          </div>
+          <div class="info-content">
+            <span class="info-label">Description</span>
+            <span class="info-value description-text">{{tournament.description || 'No description available'}}</span>
+          </div>
         </div>
       </div>
-    } @else {
-      <p class="text-muted">Loading tournament information...</p>
-    }
-  </div>
+    </div>
+  } @else {
+    <div class="loading-state">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="loading-text">Loading tournament information...</p>
+    </div>
+  }
 </div>
