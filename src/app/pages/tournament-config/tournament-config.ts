@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
@@ -24,21 +24,17 @@ export class TournamentConfig implements OnInit {
   private router = inject(Router);
   private tournamentService = inject(TournamentService);
 
-  tournamentId!: string;
+  tournamentId = input.required<string>();
   tournament$!: Observable<ITournament>;
-  activeTab = 'info';
+  activeTab = input.required<string>();
 
   ngOnInit() {
-    this.tournamentId = this.route.snapshot.params['tournamentId'];
-    if (!this.tournamentId) {
-      this.router.navigate(['/groups']);
-      return;
-    }
-    this.tournament$ = this.tournamentService.getTournamentById(this.tournamentId);
+    this.tournament$ = this.tournamentService.getTournamentById(this.tournamentId());
   }
 
   setActiveTab(tab: string) {
-    this.activeTab = tab;
+    // this.activeTab = tab;
+    this.router.navigate(['/tournament-config', this.route.snapshot.params['groupId'], this.tournamentId(), tab]);
   }
 
   goBack() {

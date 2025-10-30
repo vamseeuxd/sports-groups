@@ -18,13 +18,13 @@
 
       <!-- Tab Content -->
       <div class="tab-content">
-        @if (activeTab === 'info') {
-          <app-tournament-info [tournamentId]="tournamentId"></app-tournament-info>
+        @if (activeTab() === 'info') {
+          <app-tournament-info [tournamentId]="tournamentId()"></app-tournament-info>
         }
-        @if (activeTab === 'teams') {
-          <app-tournament-teams [tournamentId]="tournamentId"></app-tournament-teams>
+        @if (activeTab() === 'teams') {
+          <app-tournament-teams [tournamentId]="tournamentId()"></app-tournament-teams>
         }
-        @if (activeTab === 'registrations') {
+        @if (activeTab() === 'registrations') {
           @if (tournament$ | async; as tournament) {
             <app-registration-users [tournament]="tournament"></app-registration-users>
           }
@@ -32,9 +32,9 @@
       </div> 
       
       <nav class="nav nav-pills nav-justified nav-fill mt-3 bg-warning p-1 rounded">
-        <a class="nav-link text-dark" [class.text-white]="activeTab === 'info'" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')"><i class="bi bi-info-circle"></i> Info</a>
-        <a class="nav-link text-dark" [class.text-white]="activeTab === 'registrations'" [class.active]="activeTab === 'registrations'" (click)="setActiveTab('registrations')"><i class="bi bi-person-plus"></i> Players</a>
-        <a class="nav-link text-dark" [class.text-white]="activeTab === 'teams'" [class.active]="activeTab === 'teams'" (click)="setActiveTab('teams')"><i class="bi bi-people"></i> Teams</a>
+        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'info'" [class.active]="activeTab() === 'info'" (click)="setActiveTab('info')"><i class="bi bi-info-circle"></i> Info</a>
+        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'registrations'" [class.active]="activeTab() === 'registrations'" (click)="setActiveTab('registrations')"><i class="bi bi-person-plus"></i> Players</a>
+        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'teams'" [class.active]="activeTab() === 'teams'" (click)="setActiveTab('teams')"><i class="bi bi-people"></i> Teams</a>
       </nav>
     </div>
   </div>

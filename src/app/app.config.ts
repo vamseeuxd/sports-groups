@@ -4,7 +4,7 @@ import {
   provideZoneChangeDetection,
   isDevMode,
 } from '@angular/core';
-import { provideRouter, withHashLocation } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withHashLocation } from '@angular/router';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 
 import { routes } from './app.routes';
@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withHashLocation()),
+    provideRouter(routes, withHashLocation(), withComponentInputBinding()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
