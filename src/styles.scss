@@ -203,7 +203,7 @@ body {
 }
 
 /* List Group */
-.list-group-item {
+.list-group-item:not([class*="list-group-item-"]) {
   --bs-list-group-bg: var(--theme-light);
   --bs-list-group-color: var(--theme-secondary);
   --bs-list-group-border-color: var(--theme-accent);
@@ -223,4 +223,9 @@ body {
 
 .spinner-grow {
   color: var(--theme-primary);
+}
+
+.popover {
+  --bs-popover-body-padding-x: 0rem;
+  --bs-popover-body-padding-y: 0rem;
 }

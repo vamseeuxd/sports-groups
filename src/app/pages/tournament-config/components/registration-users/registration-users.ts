@@ -1,15 +1,17 @@
 import { Component, Input, OnInit, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { PlayerRegistrationService } from '../../../../services/player-registration.service';
 import { ValidationService } from '../../../../services/validation.service';
 import { LoaderService } from '../../../../services/loader.service';
 import { IPlayerRegistration, ITournament } from '../../../../models/group.model';
 import { ConfirmationModalService } from '../../../../services';
 import { PlayerRegistrationFormComponent } from '../../../../components';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 
 @Component({
   selector: 'app-registration-users',
-  imports: [CommonModule, PlayerRegistrationFormComponent],
+  imports: [CommonModule, FormsModule, PlayerRegistrationFormComponent, PopoverModule],
   templateUrl: './registration-users.html',
   styleUrl: './registration-users.scss',
 })
@@ -26,6 +28,8 @@ export class RegistrationUsersComponent implements OnInit {
   playerEmail = signal<string>('');
   showModal = false;
   showBulkModal = false;
+  showEditModal = false;
+  editingPlayer: IPlayerRegistration | null = null;
   csvData: any[] = [];
   csvErrors: string[] = [];
   uploading = false;
@@ -205,6 +209,41 @@ export class RegistrationUsersComponent implements OnInit {
     this.showBulkModal = false;
     this.csvData = [];
     this.csvErrors = [];
+  }
+
+  editPlayer(registration: IPlayerRegistration) {
+    this.editingPlayer = { ...registration };
+    this.showEditModal = true;
+  }
+
+  async updatePlayer() {
+    if (!this.editingPlayer?.id) return;
+    
+    const id = this.loader.show();
+    try {
+      await this.playerRegistrationService.updatePlayerRegistration(this.editingPlayer.id, {
+        playerName: this.editingPlayer.playerName,
+        playerEmail: this.editingPlayer.playerEmail,
+        gender: this.editingPlayer.gender,
+        mobileNumber: this.editingPlayer.mobileNumber
+      });
+      
+      const index = this.registrations.findIndex(r => r.id === this.editingPlayer!.id);
+      if (index !== -1) {
+        this.registrations[index] = { ...this.editingPlayer };
+      }
+      
+      this.closeEditModal();
+    } catch (error) {
+      console.error('Error updating player:', error);
+    } finally {
+      this.loader.hide(id);
+    }
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.editingPlayer = null;
   }
 
   downloadSampleCSV() {

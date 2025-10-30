@@ -22,39 +22,29 @@
               <div class="flex-grow-1">
                 <h6 class="mb-1 d-flex align-items-center">
                   <i class="bi bi-person-fill me-2"></i>{{ registration.playerName | titlecase }}
-                  <span class="badge ms-auto" [class]="getStatusClass(registration.status)">
+                  <span class="badge ms-auto me-2" [class]="getStatusClass(registration.status)">
                     {{ registration.status || 'pending' | titlecase }}
                   </span>
+                  <ng-template #popTemplate>
+
+                    <ul class="list-group p-1 shadow border">
+                      @if (registration.status !== 'approved') {
+                        <li class="list-group-item list-group-item-success" (click)="contentMenu.hide();approveRegistration(registration)"><i class="bi bi-check-lg me-2"></i> Approve</li>
+                      }
+                      @if (registration.status !== 'rejected') {
+                        <li class="list-group-item list-group-item-warning" (click)="contentMenu.hide();rejectRegistration(registration)"><i class="bi bi-x-lg me-2"></i> Reject</li>
+                      }
+                      <li class="list-group-item list-group-item-danger" (click)="contentMenu.hide();deleteRegistration(registration)"><i class="bi bi-trash me-2"></i> Delete</li>
+                      <li class="list-group-item list-group-item-info" (click)="contentMenu.hide();editPlayer(registration)"><i class="bi bi-pencil-fill me-2"></i> Edit Player</li>
+                    </ul>
+                  </ng-template>
+                  <button type="button" class="btn btn-outline-dark border-0 btn-sm"  #contentMenu="bs-popover" [popover]="popTemplate" container="body" placement="bottom" [outsideClick]="true">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
                 </h6>
                 <p class="mb-1 text-muted">
                   <i class="bi bi-envelope-at me-2"></i>{{ registration.playerEmail }}
                 </p>
-                <!-- <small class="text-muted">{{ formatDate(registration.registrationDate) | date : 'short' }}</small> -->
-                <div class="btn-group btn-group-sm w-100" role="group">
-                  <button
-                    *ngIf="registration.status !== 'approved'"
-                    class="btn btn-success"
-                    (click)="approveRegistration(registration)"
-                    title="Approve"
-                  >
-                    <i class="bi bi-check-lg"></i>
-                  </button>
-                  <button
-                    *ngIf="registration.status !== 'rejected'"
-                    class="btn btn-warning"
-                    (click)="rejectRegistration(registration)"
-                    title="Reject"
-                  >
-                    <i class="bi bi-x-lg"></i>
-                  </button>
-                  <button
-                    class="btn btn-danger"
-                    (click)="deleteRegistration(registration)"
-                    title="Delete"
-                  >
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -155,3 +145,43 @@
   </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showBulkModal" *ngIf="showBulkModal" (click)="closeBulkModal()"></div>
+
+<div class="modal fade" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">Edit Player</h6>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        @if (editingPlayer) {
+          <div class="mb-3">
+            <label class="form-label">Player Name *</label>
+            <input type="text" class="form-control" [(ngModel)]="editingPlayer.playerName">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email Address *</label>
+            <input type="email" class="form-control" [(ngModel)]="editingPlayer.playerEmail">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Gender *</label>
+            <select class="form-control" [(ngModel)]="editingPlayer.gender">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mobile Number *</label>
+            <input type="tel" class="form-control" [(ngModel)]="editingPlayer.mobileNumber">
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="updatePlayer()">Update Player</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showEditModal" *ngIf="showEditModal" (click)="closeEditModal()"></div>

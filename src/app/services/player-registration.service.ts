@@ -67,6 +67,14 @@ export class PlayerRegistrationService {
     await deleteDoc(registrationRef);
   }
 
+  async updatePlayerRegistration(registrationId: string, playerData: Partial<IPlayerRegistration>): Promise<void> {
+    const registrationRef = doc(this.registrationsCollection, registrationId);
+    await updateDoc(registrationRef, {
+      ...playerData,
+      lastUpdatedOn: new Date()
+    });
+  }
+
   async bulkRegisterPlayers(tournamentId: string, players: any[]): Promise<{ success: number; failed: number; errors: string[] }> {
     const results = { success: 0, failed: 0, errors: [] as string[] };
     
