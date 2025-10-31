@@ -188,6 +188,7 @@ export class RegistrationUsersComponent implements OnInit {
     reader.onload = (e) => {
       const csvText = e.target?.result as string;
       this.processCsvFile(csvText);
+      event.target.value = '';
     };
     reader.readAsText(file);
   }
@@ -215,12 +216,16 @@ export class RegistrationUsersComponent implements OnInit {
         this.tournament().id!,
         this.csvData
       );
-      
-      let message = `Successfully registered ${result.success} players.`;
+      let message = `<div class="alert alert-success" role="alert">Successfully registered ${result.success} players.</div>`;
       if (result.failed > 0) {
-        message += `\n${result.failed} failed registrations.`;
+        message += ``;
         if (result.errors.length > 0) {
-          message += `\nErrors:\n${result.errors.join('\n')}`;
+          message += `<div class="alert alert-danger" role="alert">
+                        <h6 class="alert-heading">Failed Registrations : </h6>
+                        <ul class="list-group">
+                          ${result.errors.map(error => `<li class="list-group-item list-group-item-danger">${error}</li>`).join('')}
+                        </ul>
+                      </div>`;
         }
       }
       

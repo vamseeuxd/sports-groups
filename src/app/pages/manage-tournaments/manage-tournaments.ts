@@ -9,10 +9,11 @@ import { CommonModule } from '@angular/common';
 import { Observable, firstValueFrom } from 'rxjs';
 import { ITournament, SPORTS_OPTIONS } from '../../models/group.model';
 import QRCode from 'qrcode';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 
 @Component({
   selector: 'app-manage-tournaments',
-  imports: [CommonModule],
+  imports: [CommonModule, PopoverModule],
   templateUrl: './manage-tournaments.html',
   styleUrl: './manage-tournaments.scss',
 })
