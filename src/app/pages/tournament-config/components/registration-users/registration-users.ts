@@ -2,9 +2,10 @@ import { Component, Input, OnInit, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PlayerRegistrationService } from '../../../../services/player-registration.service';
+import { TeamService } from '../../../../services/team.service';
 import { ValidationService } from '../../../../services/validation.service';
 import { LoaderService } from '../../../../services/loader.service';
-import { IPlayerRegistration, ITournament } from '../../../../models/group.model';
+import { IPlayerRegistration, ITournament, ITeam } from '../../../../models/group.model';
 import { ConfirmationModalService } from '../../../../services';
 import { PlayerRegistrationFormComponent } from '../../../../components';
 import { PopoverModule } from 'ngx-bootstrap/popover';
@@ -18,9 +19,11 @@ import { PopoverModule } from 'ngx-bootstrap/popover';
 export class RegistrationUsersComponent implements OnInit {
   private confirmationModal = inject(ConfirmationModalService);
   private playerRegistrationService = inject(PlayerRegistrationService);
+  private teamService = inject(TeamService);
   private validationService = inject(ValidationService);
   private loader = inject(LoaderService);
   registrations: IPlayerRegistration[] = [];
+  teams: ITeam[] = [];
   loading = false;
 
   tournament = input.required<ITournament>();
@@ -44,9 +47,12 @@ export class RegistrationUsersComponent implements OnInit {
   async loadRegistrations(tournamentId: string) {
     this.loading = true;
     try {
-      this.registrations = await this.playerRegistrationService.getRegistrationsByTournament(
-        tournamentId
-      );
+      const [registrations, teams] = await Promise.all([
+        this.playerRegistrationService.getRegistrationsByTournament(tournamentId),
+        this.teamService.getTeamsByTournament(tournamentId)
+      ]);
+      this.registrations = registrations;
+      this.teams = teams;
     } catch (error) {
       console.error('Error loading registrations:', error);
     } finally {
@@ -75,6 +81,16 @@ export class RegistrationUsersComponent implements OnInit {
 
   async rejectRegistration(registration: IPlayerRegistration) {
     if (!registration.id) return;
+    
+    if (this.isPlayerInTeam(registration.id)) {
+      await this.confirmationModal.confirm(
+        'Cannot Reject Player',
+        'This player is assigned to a team and cannot be rejected. Remove them from the team first.',
+        true
+      );
+      return;
+    }
+    
     const confirmed = await this.confirmationModal.confirm(
       '<i class="bi bi-hand-thumbs-down-fill"></i> Reject Registration',
       `<h5>Are you sure you want to reject this registration?</h5>`
@@ -105,6 +121,16 @@ export class RegistrationUsersComponent implements OnInit {
 
   async deleteRegistration(registration: IPlayerRegistration) {
     if (!registration.id) return;
+    
+    if (this.isPlayerInTeam(registration.id)) {
+      await this.confirmationModal.confirm(
+        'Cannot Delete Player',
+        'This player is assigned to a team and cannot be deleted. Remove them from the team first.',
+        true
+      );
+      return;
+    }
+    
     const confirmed = await this.confirmationModal.confirm(
       '<i class="bi bi-trash3-fill"></i> Delete Registration',
       `<h5>Are you sure you want to delete this registration?</h5>`
@@ -120,6 +146,10 @@ export class RegistrationUsersComponent implements OnInit {
     } finally {
       this.loader.hide(id);
     }
+  }
+
+  isPlayerInTeam(playerId: string): boolean {
+    return this.teams.some(team => team.playerIds.includes(playerId));
   }
 
   async onRegistrationSuccess() {

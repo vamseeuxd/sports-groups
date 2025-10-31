@@ -38,3 +38,18 @@ export interface IPlayerRegistration {
   status?: 'pending' | 'approved' | 'rejected';
   id?: string;
 }
+
+export interface ITeam {
+  name: string;
+  tournamentId: string;
+  playerIds: string[];
+  captainId?: string;
+  id?: string;
+}
+
+export interface ITeamPlayer {
+  id: string;
+  playerName: string;
+  playerEmail: string;
+  isCaptain?: boolean;
+}

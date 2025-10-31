@@ -32,9 +32,25 @@
                         <li class="list-group-item list-group-item-success" (click)="contentMenu.hide();approveRegistration(registration)"><i class="bi bi-check-lg me-2"></i> Approve</li>
                       }
                       @if (registration.status !== 'rejected') {
-                        <li class="list-group-item list-group-item-warning" (click)="contentMenu.hide();rejectRegistration(registration)"><i class="bi bi-x-lg me-2"></i> Reject</li>
+                        <li class="list-group-item" 
+                            [class]="isPlayerInTeam(registration.id!) ? 'list-group-item-secondary text-muted' : 'list-group-item-warning'"
+                            [style.cursor]="isPlayerInTeam(registration.id!) ? 'not-allowed' : 'pointer'"
+                            (click)="contentMenu.hide();rejectRegistration(registration)">
+                          <i class="bi bi-x-lg me-2"></i> Reject
+                          @if (isPlayerInTeam(registration.id!)) {
+                            <small class="d-block">Player is in team</small>
+                          }
+                        </li>
                       }
-                      <li class="list-group-item list-group-item-danger" (click)="contentMenu.hide();deleteRegistration(registration)"><i class="bi bi-trash me-2"></i> Delete</li>
+                      <li class="list-group-item" 
+                          [class]="isPlayerInTeam(registration.id!) ? 'list-group-item-secondary text-muted' : 'list-group-item-danger'"
+                          [style.cursor]="isPlayerInTeam(registration.id!) ? 'not-allowed' : 'pointer'"
+                          (click)="contentMenu.hide();deleteRegistration(registration)">
+                        <i class="bi bi-trash me-2"></i> Delete
+                        @if (isPlayerInTeam(registration.id!)) {
+                          <small class="d-block">Player is in team</small>
+                        }
+                      </li>
                       <li class="list-group-item list-group-item-info" (click)="contentMenu.hide();editPlayer(registration)"><i class="bi bi-pencil-fill me-2"></i> Edit Player</li>
                     </ul>
                   </ng-template>

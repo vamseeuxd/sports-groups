@@ -1,8 +1,27 @@
-.card {
-  border: 1px solid #ffc107;
+.team-card {
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
 }
 
-.card-header {
-  background-color: #fff3cd;
-  border-bottom: 1px solid #ffc107;
+.modal {
+  &.show {
+    display: block !important;
+  }
+}
+
+.list-group-item {
+  &.active {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+  }
+}
+
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
 }

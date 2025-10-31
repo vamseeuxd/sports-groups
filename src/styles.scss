@@ -42,6 +42,7 @@ body {
   --theme-accent: #f6e6b7;
   --theme-text: #201a1b;
   --theme-shadow: 0 0 0 0.25rem rgb(217 163 1 / 30%);
+  --bs-primary: #d9a301;
 }
 
 html,
@@ -203,7 +204,8 @@ body {
 }
 
 /* List Group */
-.list-group-item:not([class*="list-group-item-"]) {
+.list-group-item:not([class*="list-group-item-"]),
+.list-group-item-primary {
   --bs-list-group-bg: var(--theme-light);
   --bs-list-group-color: var(--theme-secondary);
   --bs-list-group-border-color: var(--theme-accent);

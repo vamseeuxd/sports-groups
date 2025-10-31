@@ -3,7 +3,8 @@ export const APP_CONSTANTS = {
     GROUPS: 'groups',
     USERS: 'users',
     TOURNAMENTS: 'tournaments',
-    PLAYER_REGISTRATIONS: 'playerRegistrations'
+    PLAYER_REGISTRATIONS: 'playerRegistrations',
+    TEAMS: 'teams'
   },
   VALIDATION: {
     GROUP_NAME_MAX_LENGTH: 50,
