@@ -53,3 +53,25 @@ export interface ITeamPlayer {
   playerEmail: string;
   isCaptain?: boolean;
 }
+
+export interface IKnockoutMatch {
+  id: string;
+  round: number;
+  position: number;
+  team1?: ITeam;
+  team2?: ITeam;
+  winner?: ITeam;
+  status: 'pending' | 'in-progress' | 'completed';
+  scheduledDate?: Date;
+  nextMatchId?: string;
+}
+
+export interface IKnockoutTournament {
+  tournamentId: string;
+  teams: ITeam[];
+  matches: IKnockoutMatch[];
+  totalRounds: number;
+  currentRound: number;
+  status: 'draft' | 'active' | 'completed';
+  id?: string;
+}

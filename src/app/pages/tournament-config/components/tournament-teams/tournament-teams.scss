@@ -15,9 +15,9 @@
 
 .list-group-item {
   &.active {
-    background-color: var(--bs-primary);
-    border-color: var(--bs-primary);
-    color: white;
+    background-color: var(--theme-accent);
+    border-color: var(--theme-accent);
+    color: var(--bs-primary);
   }
 }
 

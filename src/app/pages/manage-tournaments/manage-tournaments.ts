@@ -10,10 +10,11 @@ import { Observable, firstValueFrom } from 'rxjs';
 import { ITournament, SPORTS_OPTIONS } from '../../models/group.model';
 import QRCode from 'qrcode';
 import { PopoverModule } from 'ngx-bootstrap/popover';
+import { CopyToClipboardDirective } from '../../directives';
 
 @Component({
   selector: 'app-manage-tournaments',
-  imports: [CommonModule, PopoverModule],
+  imports: [CommonModule, PopoverModule, CopyToClipboardDirective],
   templateUrl: './manage-tournaments.html',
   styleUrl: './manage-tournaments.scss',
 })

@@ -43,6 +43,7 @@ body {
   --theme-text: #201a1b;
   --theme-shadow: 0 0 0 0.05rem rgb(217 163 1 / 30%);
   --bs-primary: #d9a301;
+  --half-screen-height: calc(50dvh - 165px);
 }
 
 html,

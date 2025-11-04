@@ -25,4 +25,13 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () => import('./pages/tournament-config/tournament-config').then(c => c.TournamentConfig)
     },
+    {
+        path: 'tournament-knockout/:groupId/:tournamentId',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/tournament-knockout/tournament-knockout').then(c => c.TournamentKnockout)
+    },
+    {
+        path: 'copy-demo',
+        loadComponent: () => import('./pages/copy-demo/copy-demo').then(c => c.CopyDemo)
+    },
 ];

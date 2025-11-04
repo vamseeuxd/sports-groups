@@ -4,3 +4,4 @@ export * from './validation.service';
 export * from './loader.service';
 export * from './confirmation-modal.service';
 export * from './team.service';
+export * from './clipboard.service';

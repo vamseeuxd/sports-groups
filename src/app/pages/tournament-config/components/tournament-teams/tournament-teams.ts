@@ -1,13 +1,16 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ITeam, IPlayerRegistration, ITeamPlayer } from '../../../../models/group.model';
 import { TeamService } from '../../../../services/team.service';
 import { PlayerRegistrationService } from '../../../../services/player-registration.service';
+import { CopyToClipboardDirective } from '../../../../directives';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 
 @Component({
   selector: 'app-tournament-teams',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CopyToClipboardDirective, PopoverModule],
   templateUrl: './tournament-teams.html',
   styleUrl: './tournament-teams.scss'
 })
@@ -16,6 +19,9 @@ export class TournamentTeamsComponent implements OnInit {
   
   private teamService = inject(TeamService);
   private playerService = inject(PlayerRegistrationService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  ativeCard = '';
   
   teams: ITeam[] = [];
   availablePlayers: IPlayerRegistration[] = [];
@@ -201,5 +207,10 @@ export class TournamentTeamsComponent implements OnInit {
     } catch (error) {
       console.error('Error setting captain:', error);
     }
+  }
+
+  openKnockoutPlanning() {
+    const groupId = this.route.snapshot.params['groupId'];
+    this.router.navigate(['/tournament-knockout', groupId, this.tournamentId]);
   }
 }
