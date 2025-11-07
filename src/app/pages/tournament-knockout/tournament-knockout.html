@@ -1,66 +1,54 @@
+<!-- prettier-ignore -->
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+    <div class="col-md-10 offset-md-1">
       <div class="d-flex align-items-center pt-3">
-        <button class="btn btn-outline-dark border-0 me-auto text-truncate" (click)="goBack()">
-          <i class="bi bi-arrow-left"></i> Back
-        </button>
+        <button class="btn btn-outline-dark border-0 me-auto text-truncate" (click)="goBack()"> <i class="bi bi-arrow-left"></i> Back </button>
         <h4 class="text-center mx-auto text-truncate" style="max-width: 50%;">Knockout</h4>
-        <button class="btn btn-outline-dark border-0 ms-auto text-truncate" style="opacity: 0;pointer-events: none;">
-          Add <i class="bi bi-plus-lg"></i>
-        </button>
+        <button class="btn btn-outline-dark border-0 ms-auto text-truncate" style="opacity: 0;pointer-events: none;"> Add <i class="bi bi-plus-lg"></i> </button>
       </div>
     </div>
-    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+    <div class="col-md-10 offset-md-1">
       <div class="row">
         @if (isLoading) {
         <div class="col-12 d-flex justify-content-center align-items-center">
           <div class="text-center">
-            <div class="spinner-border text-primary mb-2" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
+            <div class="spinner-border text-primary mb-2" role="status"> <span class="visually-hidden">Loading...</span> </div>
             <p class="text-muted">Loading teams...</p>
           </div>
         </div>
         }
         <!-- Team Selection Panel -->
         @if (!knockoutTournament && !isLoading) {
-        <div class="col-md-4">
+        <div class="col-12">
           <div class="card">
-            <div class="card-header">
-              <h5 class="m-0 p-0">
-                <i class="fas fa-users me-2"></i>Select Teams
-              </h5>
+            <div class="card-header position-relative">
+              <h5 class="m-0 p-0"><i class="bi bi-people-fill me-2"></i>Select Teams</h5>
               <small class="text-muted">Choose teams for knockout tournament (must be power of 2)</small>
+              <ng-container *ngTemplateOutlet="popMenuButton;"></ng-container>
             </div>
-            <ng-container *ngTemplateOutlet="popMenuButton;"></ng-container>
-            <div class="select-teams card-body">
+            <div class="card-body">
               <!-- No teams message -->
               @if (teams.length === 0) {
-              <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                No teams found for this tournament. Please create teams first.
-              </div>
+              <div class="alert alert-warning"> <i class="bi bi-shield-fill-exclamation me-2"></i> No teams found for this tournament. Please create teams first. </div>
               }
 
               <!-- Team list -->
               @if (teams.length > 0) {
-              <div class="list-group">
+              <div class="list-group"
+                style="min-height: calc(100dvh - 212px);max-height: calc(100dvh - 212px);overflow-y: auto;">
                 @for (team of teams; track $index) {
-                <div class="list-group-item cursor-pointer mb-2 border rounded-0" [class.active]="isTeamSelected(team)"
-                  (click)="toggleTeamSelection(team)">
+                <div class="list-group-item cursor-pointer mb-2 border rounded-0" role="button"
+                  [class.active]="isTeamSelected(team)" (click)="toggleTeamSelection(team)">
                   <div class="d-flex flex-row align-items-center">
                     @if (isTeamSelected(team)) {
-                    <i class="bi bi-check-circle h2 m-0 p-0 me-3"></i>
+                    <i class="bi bi-check-circle h4 m-0 p-0 me-3"></i>
                     }@else {
-                    <i class="bi bi-circle h2 m-0 p-0 me-3"></i>
+                    <i class="bi bi-circle h4 m-0 p-0 me-3"></i>
                     }
                     <div class="d-flex align-items-center col">
                       <h6 class="m-0 p-0 me-3">{{ team.name }}</h6>
-                      <small class="ms-auto">
-                        <i class="bi bi-people-fill me-1"></i>
-                        {{ team.playerIds.length || 0 }} player{{ (team.playerIds.length || 0) === 1 ? '' : 's' }}
-                      </small>
+                      <small class="ms-auto"> <i class="bi bi-people-fill me-1"></i> {{ team.playerIds.length || 0 }} player{{ (team.playerIds.length || 0) === 1 ? '' : 's' }} </small>
                     </div>
                   </div>
                 </div>
@@ -71,6 +59,7 @@
 
           </div>
         </div>
+
         }
         <!-- Tournament Bracket -->
         @if (!isLoading) {
@@ -79,9 +68,7 @@
           <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
               <div class="w-100">
-                <h5 class="mb-1">
-                  <i class="bi bi-trophy-fill me-2"></i>Tournament Bracket
-                </h5>
+                <h5 class="mb-1"> <i class="bi bi-trophy-fill me-2"></i>Tournament Bracket </h5>
                 <div class="d-flex justify-content-start align-items-center w-100">
                   <small class="text-muted">Click on teams to advance winners</small>
                   <div class="d-flex align-items-center gap-1 ms-auto">
@@ -96,73 +83,111 @@
               <tabset>
                 <tab *ngFor="let round of getRounds()">
 
-                  <ng-template tabHeading>
-                    {{getRoundName(round)}}
-                  </ng-template>
+                  <ng-template tabHeading> {{getRoundName(round)}} </ng-template>
                   <div class="text-center my-2">
-                    <small class="badge text-bg-warning">
-                      {{ getCompletedMatchesCount(round) }} /
-                      {{ getMatchesByRound(round).length }} completed
-                    </small>
+                    <small class="badge text-bg-warning"> {{ getCompletedMatchesCount(round) }} / {{ getMatchesByRound(round).length }} completed </small>
                   </div>
                   <div class="list-group px-3" style="min-height: calc(100dvh - 212px);max-height: calc(100dvh - 212px);overflow-y: auto;">
-                    <div class="list-group-item mb-3 shadow-sm border" *ngFor="let match of getMatchesByRound(round)"
-                      [class.completed]="match.status === 'completed'">
+                    <div class="list-group-item mb-3 shadow-sm border" *ngFor="let match of getMatchesByRound(round)"  [class.completed]="match.status === 'completed'">
 
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <h6 class="p-0 m-0">Match {{ match.id.split('-').slice(1).join('-') }}</h6>
-                        <span class="match-status badge badge-sm"
-                          [class]="match.status === 'completed' ? 'bg-success' : 'bg-secondary'">{{ match.status |
-                          titlecase }}</span>
+                        <span class="match-status badge badge-sm" [class]="match.status === 'completed' ? 'bg-success' : 'bg-secondary'">{{ match.status | titlecase }}</span>
                       </div>
 
                       <div class="d-flex justify-content-between align-items-center mb-2 border p-2">
                         <!-- Team 1 -->
-                        <div class="badge text-bg-primary"
-                          [class.text-bg-success]="match.winner?.id === match.team1?.id"
-                          [class.text-bg-danger]="match.winner && match.winner.id !== match.team1?.id"
-                          [class.clickable]="match.team1 && match.team2 && match.status === 'pending'"
-                          (click)="match.team1 && match.team2 && match.status === 'pending' && advanceWinner(match, match.team1)">
+                        <!-- <div class="badge text-bg-primary" [class.text-bg-success]="match.winner?.id === match.team1?.id" [class.text-bg-danger]="match.winner && match.winner.id !== match.team1?.id" [class.clickable]="match.team1 && match.team2 && match.status === 'pending'" (click)="match.team1 && match.team2 && match.status === 'pending' && advanceWinner(match, match.team1)">
                           <div class="h6 d-flex justify-content-center align-items-center p-0 m-0">
                             <div class="team-indicators">
                               @if (match.team1?.name) {
                                 @if (match.winner?.id === match.team1?.id) {
-                                <i class="bi bi-trophy-fill"></i>
+                                  <i class="bi bi-trophy-fill"></i>
                                 }
                                 @else {
-                                <i class="bi bi bi-award" role="button"></i>
+                                  <i class="bi bi bi-award" role="button"></i>
                                 }
                               }
                               <span class="ms-2">{{ match.team1?.name || 'TBD' }}</span>
                             </div>
                           </div>
+                        </div> -->
+
+                        <div class="input-group">
+                          <!-- <button class="btn btn-secondary" 
+                                  [class.btn-success]="match.winner?.id === match.team1?.id" 
+                                  [class.btn-danger]="match.winner && match.winner.id !== match.team1?.id" type="button" id="button-addon1">
+                            @if (match.team1?.name) {
+                                @if (match.winner?.id === match.team1?.id) {
+                                  <i class="bi bi-trophy-fill"></i>
+                                }
+                                @else {
+                                  <i class="bi bi-emoji-smile-fill"></i>
+                                }
+                              }
+                          </button> -->
+                          <select class="form-select" aria-label="Default select example">
+                            <option selected>Select Team</option>
+                            @for (team of teams; track $index) {
+                              <option [value]="team.id" [selected]="match.team1?.id === team.id">{{ team.name }}</option>
+                            }
+                          </select>
+                          <!-- <button class="btn btn-outline-secondary" type="button" id="button-addon2" 
+                                (click)="match.team1 && match.team2 && match.status === 'pending' && advanceWinner(match, match.team1)">Mark as Winner</button> -->
                         </div>
+
+                         <!-- (click)="match.team1 && match.team2 && match.status === 'pending' && advanceWinner(match, match.team1)" -->
 
                         <!-- VS Divider -->
-                        <div class="vs-divider">
-                          <span class="vs-text">VS</span>
+                        <div class="vs-divider mx-3"> 
+                          
+                          <img width="50" src="./versus-pictogram-color-no-bg.svg" alt="">
+                        
                         </div>
 
+                        <div class="input-group">
+                          <!-- <button class="btn btn-secondary" 
+                                  [class.btn-success]="match.winner?.id === match.team2?.id" 
+                                  [class.btn-danger]="match.winner && match.winner.id !== match.team2?.id" type="button" id="button-addon1">
+                            @if (match.team2?.name) {
+                              <div class="team-indicators">
+                                @if (match.winner?.id === match.team2?.id) {
+                                  <i class="bi bi-trophy-fill"></i>
+                                }
+                                @else {
+                                  <i class="bi bi-emoji-smile-fill"></i>
+                                }
+                              </div>
+                            }
+                          </button> -->
+                          <select class="form-select" aria-label="Default select example">
+                            <option selected>Select Team</option>
+                            @for (team of teams; track $index) {
+                              <option [value]="team.id" [selected]="match.team1?.id === team.id">{{ team.name }}</option>
+                            }
+                          </select>
+                          <!-- <button class="btn btn-outline-secondary" type="button" id="button-addon2" 
+                                  (click)="match.team1 && match.team2 && match.status === 'pending' && advanceWinner(match, match.team2)">Mark as Winner</button> -->
+                        </div>
+
+                        
+
                         <!-- Team 2 -->
-                        <div class="badge text-bg-primary"
-                          [class.text-bg-success]="match.winner?.id === match.team2?.id"
-                          [class.text-bg-danger]="match.winner && match.winner.id !== match.team2?.id"
-                          [class.clickable]="match.team1 && match.team2 && match.status === 'pending'"
-                          (click)="match.team1 && match.team2 && match.status === 'pending' && advanceWinner(match, match.team2)">
+                        <!-- <div class="badge text-bg-primary" [class.text-bg-success]="match.winner?.id === match.team2?.id" [class.text-bg-danger]="match.winner && match.winner.id !== match.team2?.id" [class.clickable]="match.team1 && match.team2 && match.status === 'pending'" (click)="match.team1 && match.team2 && match.status === 'pending' && advanceWinner(match, match.team2)">
                           <div class="h6 d-flex justify-content-center align-items-center p-0 m-0">
                             <span class="me-2">{{ match.team2?.name || 'TBD' }}</span>
                             @if (match.team2?.name) {
                               <div class="team-indicators">
                                 @if (match.winner?.id === match.team2?.id) {
-                                <i class="bi bi-trophy-fill"></i>
+                                  <i class="bi bi-trophy-fill"></i>
                                 }
                                 @else {
-                                <i class="bi bi bi-award" role="button"></i>
+                                  <i class="bi bi bi-award" role="button"></i>
                                 }
                               </div>
                             }
                           </div>
-                        </div>
+                        </div> -->
                       </div>
                     </div>
                   </div>
@@ -181,26 +206,19 @@
   <ng-template #popTemplate>
     <ul class="list-group p-1 shadow border">
       @if (knockoutTournament && $any(knockoutTournament).status === 'completed') {
-      <li class="list-group-item" role="button" (click)="contentMenu.hide();"><i
-          class="fas fa-crown text-warning me-2"></i><strong>Champion: {{ getChampion()?.name }}</strong>
-      </li>
+      <li class="list-group-item" role="button" (click)="contentMenu.hide()"> <i class="fas fa-crown text-warning me-2"></i ><strong>Champion: {{ getChampion()?.name }}</strong> </li>
       }
-      <li class="list-group-item" role="button" (click)="contentMenu.hide();generateBracket();">
+      <li class="list-group-item" role="button" (click)="contentMenu.hide(); generateBracket()">
         @if (isGenerating) {
-        <i class="fas fa-spinner fa-spin me-2"></i> Generating...
+          <i class="fas fa-spinner fa-spin me-2"></i> Generating... 
+        } @else {
+          <i class="fas fa-sitemap me-2"></i> Generate Bracket 
         }
-        @else {
-        <i class="fas fa-sitemap me-2"></i> Generate Bracket
-        }
-
       </li>
-      <li class="list-group-item" role="button" (click)="contentMenu.hide();resetBracket()">
-        <i class="fas fa-redo me-2"></i>Reset
-      </li>
+      <li class="list-group-item" role="button" (click)="contentMenu.hide(); resetBracket()"> <i class="fas fa-redo me-2"></i>Reset </li>
     </ul>
   </ng-template>
-  <button type="button" class="btn btn-outline-dark border-0 btn-sm position-absolute top-0 end-0 m-1"
-    #contentMenu="bs-popover" [popover]="popTemplate" container="body" placement="bottom" [outsideClick]="true">
+  <button type="button" class="btn btn-outline-dark border-0 btn-sm position-absolute top-0 end-0 m-1" #contentMenu="bs-popover" [popover]="popTemplate" container="body" placement="bottom" [outsideClick]="true" >
     <i class="bi bi-three-dots-vertical"></i>
   </button>
 </ng-template>
