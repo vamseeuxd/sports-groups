@@ -24,6 +24,9 @@
         @if (activeTab() === 'teams') {
           <teams [tournamentId]="tournamentId()"></teams>
         }
+        @if (activeTab() === 'matches') {
+          <matches [tournamentId]="tournamentId()"></matches>
+        }
         @if (activeTab() === 'registrations') {
           @if (tournament$ | async; as tournament) {
             <players [tournament]="tournament"></players>
@@ -35,6 +38,7 @@
         <a class="nav-link text-dark" [class.text-white]="activeTab() === 'info'" [class.active]="activeTab() === 'info'" (click)="setActiveTab('info')"><i class="bi bi-info-circle"></i> Info</a>
         <a class="nav-link text-dark" [class.text-white]="activeTab() === 'registrations'" [class.active]="activeTab() === 'registrations'" (click)="setActiveTab('registrations')"><i class="bi bi-person-plus"></i> Players</a>
         <a class="nav-link text-dark" [class.text-white]="activeTab() === 'teams'" [class.active]="activeTab() === 'teams'" (click)="setActiveTab('teams')"><i class="bi bi-people"></i> Teams</a>
+        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'matches'" [class.active]="activeTab() === 'matches'" (click)="setActiveTab('matches')"><i class="bi bi-trophy"></i> Matches</a>
       </nav>
     </div>
   </div>

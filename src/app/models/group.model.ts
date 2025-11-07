@@ -56,6 +56,7 @@ export interface ITeamPlayer {
 
 export interface IKnockoutMatch {
   id: string;
+  tournamentId: string;
   round: number;
   position: number;
   team1?: ITeam;

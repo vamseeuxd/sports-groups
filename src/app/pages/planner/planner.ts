@@ -7,6 +7,7 @@ import { ITournament } from '../../models/group.model';
 import { InfoComponent } from '../info/info';
 import { TeamsComponent } from '../teams/teams';
 import { PlayersComponent } from '../players/players';
+import { MatchesComponent } from '../matches/matches';
 
 @Component({
   selector: 'planner',
@@ -15,6 +16,7 @@ import { PlayersComponent } from '../players/players';
     InfoComponent,
     TeamsComponent,
     PlayersComponent,
+    MatchesComponent,
   ],
   templateUrl: './planner.html',
   styleUrl: './planner.scss'
