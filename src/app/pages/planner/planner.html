@@ -19,14 +19,14 @@
       <!-- Tab Content -->
       <div class="tab-content">
         @if (activeTab() === 'info') {
-          <app-tournament-info [tournamentId]="tournamentId()"></app-tournament-info>
+          <info [tournamentId]="tournamentId()"></info>
         }
         @if (activeTab() === 'teams') {
-          <app-tournament-teams [tournamentId]="tournamentId()"></app-tournament-teams>
+          <teams [tournamentId]="tournamentId()"></teams>
         }
         @if (activeTab() === 'registrations') {
           @if (tournament$ | async; as tournament) {
-            <app-registration-users [tournament]="tournament"></app-registration-users>
+            <players [tournament]="tournament"></players>
           }
         }
       </div> 

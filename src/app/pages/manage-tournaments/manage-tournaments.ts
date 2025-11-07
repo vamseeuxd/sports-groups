@@ -157,6 +157,6 @@ export class ManageTournaments {
   }
 
   configureTournament(tournamentId: string) {
-    this.router.navigate(['/tournament-config', this.groupId, tournamentId, 'info']);
+    this.router.navigate(['/planner', this.groupId, tournamentId, 'info']);
   }
 }

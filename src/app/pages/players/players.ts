@@ -1,22 +1,19 @@
 import { Component, Input, OnInit, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PlayerRegistrationService } from '../../../../services/player-registration.service';
-import { TeamService } from '../../../../services/team.service';
-import { ValidationService } from '../../../../services/validation.service';
-import { LoaderService } from '../../../../services/loader.service';
-import { IPlayerRegistration, ITournament, ITeam } from '../../../../models/group.model';
-import { ConfirmationModalService } from '../../../../services';
-import { PlayerRegistrationFormComponent } from '../../../../components';
 import { PopoverModule } from 'ngx-bootstrap/popover';
+import { PlayerRegistrationFormComponent } from '../../components';
+import { ConfirmationModalService, LoaderService, TeamService, ValidationService } from '../../services';
+import { PlayerRegistrationService } from '../../services/player-registration.service';
+import { IPlayerRegistration, ITeam, ITournament } from '../../models';
 
 @Component({
-  selector: 'app-registration-users',
+  selector: 'players',
   imports: [CommonModule, FormsModule, PlayerRegistrationFormComponent, PopoverModule],
-  templateUrl: './registration-users.html',
-  styleUrl: './registration-users.scss',
+  templateUrl: './players.html',
+  styleUrl: './players.scss',
 })
-export class RegistrationUsersComponent implements OnInit {
+export class PlayersComponent implements OnInit {
   private confirmationModal = inject(ConfirmationModalService);
   private playerRegistrationService = inject(PlayerRegistrationService);
   private teamService = inject(TeamService);

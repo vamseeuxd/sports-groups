@@ -1,17 +1,17 @@
 import { Component, Input, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, map } from 'rxjs';
-import { TournamentService } from '../../../../services/tournament.service';
-import { ITournament } from '../../../../models/group.model';
 import { Timestamp } from 'firebase/firestore';
+import { TournamentService } from '../../services/tournament.service';
+import { ITournament } from '../../models';
 
 @Component({
-  selector: 'app-tournament-info',
+  selector: 'info',
   imports: [CommonModule],
-  templateUrl: './tournament-info.html',
-  styleUrl: './tournament-info.scss'
+  templateUrl: './info.html',
+  styleUrl: './info.scss'
 })
-export class TournamentInfoComponent implements OnInit {
+export class InfoComponent implements OnInit {
   @Input() tournamentId!: string;
   
   private tournamentService = inject(TournamentService);

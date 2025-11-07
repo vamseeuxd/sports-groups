@@ -4,22 +4,22 @@ import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { TournamentService } from '../../services/tournament.service';
 import { ITournament } from '../../models/group.model';
-import { TournamentInfoComponent } from './components/tournament-info/tournament-info';
-import { TournamentTeamsComponent } from './components/tournament-teams/tournament-teams';
-import { RegistrationUsersComponent } from './components/registration-users/registration-users';
+import { InfoComponent } from '../info/info';
+import { TeamsComponent } from '../teams/teams';
+import { PlayersComponent } from '../players/players';
 
 @Component({
-  selector: 'app-tournament-config',
+  selector: 'planner',
   imports: [
     CommonModule,
-    TournamentInfoComponent,
-    TournamentTeamsComponent,
-    RegistrationUsersComponent,
+    InfoComponent,
+    TeamsComponent,
+    PlayersComponent,
   ],
-  templateUrl: './tournament-config.html',
-  styleUrl: './tournament-config.scss'
+  templateUrl: './planner.html',
+  styleUrl: './planner.scss'
 })
-export class TournamentConfig implements OnInit {
+export class PlannerComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private tournamentService = inject(TournamentService);
@@ -34,7 +34,7 @@ export class TournamentConfig implements OnInit {
 
   setActiveTab(tab: string) {
     // this.activeTab = tab;
-    this.router.navigate(['/tournament-config', this.route.snapshot.params['groupId'], this.tournamentId(), tab]);
+    this.router.navigate(['/planner', this.route.snapshot.params['groupId'], this.tournamentId(), tab]);
   }
 
   goBack() {
