@@ -18,6 +18,18 @@
             <h6>Round {{ match.round }} - Position {{ match.position }}</h6>
     
             <div class="btn-group btn-group-sm position-absolute top-0 end-0">
+              <button *ngIf="match.status === 'pending' && match.team1 && match.team2" 
+                      class="btn btn-success" 
+                      (click)="startMatch(match)" 
+                      title="Start match">
+                <i class="bi bi-play-fill"></i>
+              </button>
+              <button *ngIf="match.status === 'in-progress'" 
+                      class="btn btn-info" 
+                      (click)="viewLiveScore(match)" 
+                      title="Live scoreboard">
+                <i class="bi bi-broadcast"></i>
+              </button>
               <button class="btn btn-outline-secondary" (click)="openManageTeamsModal(match)" title="Manage teams">
                 <i class="bi bi-gear"></i>
               </button>

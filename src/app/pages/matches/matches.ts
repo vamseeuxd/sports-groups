@@ -6,6 +6,7 @@ import { PopoverModule } from 'ngx-bootstrap/popover';
 import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 import { ConfirmationModalService, MatchService, TeamService } from '../../services';
+import { LiveScoreService } from '../../services/live-score.service';
 import { IKnockoutMatch, ITeam } from '../../models';
 import { SharedLayoutComponent, CreateMatchModalComponent, EditMatchModalComponent, ManageTeamsModalComponent } from '../../components';
 import { DateUtils, StatusUtils } from '../../utils';
@@ -23,6 +24,8 @@ export class MatchesComponent implements OnInit {
   private teamService = inject(TeamService);
   private confirmationModal = inject(ConfirmationModalService);
   private modalService = inject(BsModalService);
+  private liveScoreService = inject(LiveScoreService);
+  private router = inject(Router);
   
   createModalRef?: BsModalRef;
   editModalRef?: BsModalRef;
@@ -228,4 +231,26 @@ export class MatchesComponent implements OnInit {
 
   getFormattedDate = DateUtils.getFormattedDate;
   getStatusBadgeClass = StatusUtils.getStatusBadgeClass;
+
+  async startMatch(match: IKnockoutMatch) {
+    if (!match.id) return;
+    
+    const confirmed = await this.confirmationModal.confirm(
+      'Start Match',
+      `Start the match between ${match.team1?.name} and ${match.team2?.name}?`
+    );
+    
+    if (confirmed) {
+      try {
+        await this.liveScoreService.startMatch(match.id, 'admin');
+        await this.loadData();
+      } catch (error) {
+        console.error('Error starting match:', error);
+      }
+    }
+  }
+
+  viewLiveScore(match: IKnockoutMatch) {
+    this.router.navigate(['/live-score', match.id]);
+  }
 }

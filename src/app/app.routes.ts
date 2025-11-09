@@ -25,5 +25,9 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () => import('./pages/planner/planner').then(c => c.PlannerComponent)
     },
+    {
+        path: 'live-score/:matchId',
+        loadComponent: () => import('./pages/live-score/live-score').then(c => c.LiveScoreComponent)
+    },
 
 ];

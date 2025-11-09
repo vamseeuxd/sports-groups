@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, doc, updateDoc, deleteDoc, query, where, getDocs } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, doc, updateDoc, deleteDoc, query, where, getDocs, docData } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 import { IKnockoutMatch } from '../models';
 import { APP_CONSTANTS } from '../constants/app.constants';
 import { LoaderService } from './loader.service';
@@ -42,5 +43,10 @@ export class MatchService {
     const matchRef = doc(this.matchesCollection, matchId);
     await deleteDoc(matchRef);
     this.loaderService.hide(id);
+  }
+
+  getMatchById(matchId: string): Observable<IKnockoutMatch> {
+    const matchRef = doc(this.firestore, APP_CONSTANTS.COLLECTIONS.MATCHES, matchId);
+    return docData(matchRef, { idField: 'id' }) as Observable<IKnockoutMatch>;
   }
 }
