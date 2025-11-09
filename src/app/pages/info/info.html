@@ -1,81 +1,97 @@
-<div class="tournament-card">
-  <div class="tournament-header">
-    <div class="header-content">
-      <i class="bi bi-trophy-fill tournament-icon"></i>
-      <h4 class="tournament-title">Tournament Information</h4>
+<app-shared-layout 
+  title="Tournament Information" 
+  icon="bi-info-circle"
+  [loading]="!(tournament$ | async)"
+  loadingText="Loading tournament information..."
+  [actions]="headerActions">
+  
+  <div *ngIf="tournament$ | async as tournament" class="row g-3">
+    <div class="col-md-6 col-lg-4 col-xl-3">
+      <div class="card h-100">
+        <div class="card-body d-flex align-items-center" style="cursor: pointer;" (click)="copyToClipboard(tournament.name)">
+          <div class="me-3">
+            <i class="bi bi-trophy text-warning" style="font-size: 2rem;"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="card-subtitle mb-1 text-muted">Tournament Name</h6>
+            <h6 class="card-title mb-0">{{tournament.name}}</h6>
+          </div>
+          <i class="bi bi-copy text-muted"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 col-xl-3">
+      <div class="card h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="me-3">
+            <i class="bi bi-controller text-primary" style="font-size: 2rem;"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="card-subtitle mb-1 text-muted">Sport</h6>
+            <h6 class="card-title mb-0">{{tournament.sport | titlecase}}</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 col-xl-3">
+      <div class="card h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="me-3">
+            <i class="bi bi-calendar-event text-success" style="font-size: 2rem;"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="card-subtitle mb-1 text-muted">Start Date</h6>
+            <h6 class="card-title mb-0">{{formatDateForDisplay(tournament.startDate) | date:'MMM dd, yyyy'}}</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 col-xl-3">
+      <div class="card h-100">
+        <div class="card-body d-flex align-items-center" style="cursor: pointer;" (click)="copyToClipboard(tournamentId)">
+          <div class="me-3">
+            <i class="bi bi-hash text-info" style="font-size: 2rem;"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="card-subtitle mb-1 text-muted">Tournament ID</h6>
+            <p class="card-text mb-0 font-monospace small">{{tournamentId}}</p>
+          </div>
+          <i class="bi bi-copy text-muted"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 col-xl-3">
+      <div class="card h-100">
+        <div class="card-body d-flex align-items-center" style="cursor: pointer;" (click)="copyToClipboard(tournament.groupId)">
+          <div class="me-3">
+            <i class="bi bi-people text-secondary" style="font-size: 2rem;"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="card-subtitle mb-1 text-muted">Group ID</h6>
+            <p class="card-text mb-0 font-monospace small">{{tournament.groupId}}</p>
+          </div>
+          <i class="bi bi-copy text-muted"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 col-xl-3">
+      <div class="card h-100">
+        <div class="card-body d-flex align-items-start">
+          <div class="me-3 mt-1">
+            <i class="bi bi-file-text text-dark" style="font-size: 2rem;"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="card-subtitle mb-1 text-muted">Description</h6>
+            <p class="card-text mb-0">{{tournament.description || 'No description available'}}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   
-  @if (tournament$ | async; as tournament) {
-    <div class="tournament-body">
-      <div class="info-grid">
-        <div class="info-item" (click)="copyToClipboard(tournament.name)">
-          <div class="info-icon">
-            <i class="bi bi-trophy"></i>
-          </div>
-          <div class="info-content">
-            <span class="info-label">Tournament Name</span>
-            <span class="info-value">{{tournament.name}}</span>
-          </div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-icon">
-            <i class="bi bi-controller"></i>
-          </div>
-          <div class="info-content">
-            <span class="info-label">Sport</span>
-            <span class="info-value sport-badge">{{tournament.sport}}</span>
-          </div>
-        </div>
-        
-        <div class="info-item">
-          <div class="info-icon">
-            <i class="bi bi-calendar-event"></i>
-          </div>
-          <div class="info-content">
-            <span class="info-label">Start Date</span>
-            <span class="info-value">{{tournament.startDate | date:'MMM dd, yyyy'}}</span>
-          </div>
-        </div>
-        
-        <div class="info-item" (click)="copyToClipboard(tournamentId)">
-          <div class="info-icon">
-            <i class="bi bi-hash"></i>
-          </div>
-          <div class="info-content">
-            <span class="info-label">Tournament ID</span>
-            <span class="info-value id-value">{{tournamentId}}</span>
-          </div>
-        </div>
-        
-        <div class="info-item" (click)="copyToClipboard(tournament.groupId)">
-          <div class="info-icon">
-            <i class="bi bi-people"></i>
-          </div>
-          <div class="info-content">
-            <span class="info-label">Group ID</span>
-            <span class="info-value id-value">{{tournament.groupId}}</span>
-          </div>
-        </div>
-        
-        <div class="info-item description-item">
-          <div class="info-icon">
-            <i class="bi bi-file-text"></i>
-          </div>
-          <div class="info-content">
-            <span class="info-label">Description</span>
-            <span class="info-value description-text">{{tournament.description || 'No description available'}}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  } @else {
-    <div class="loading-state">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="loading-text">Loading tournament information...</p>
-    </div>
-  }
-</div>
+</app-shared-layout>
