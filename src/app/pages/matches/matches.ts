@@ -7,11 +7,11 @@ import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 import { ConfirmationModalService, MatchService, TeamService } from '../../services';
 import { IKnockoutMatch, ITeam } from '../../models';
-import { SharedLayoutComponent } from '../../components';
+import { SharedLayoutComponent, CreateMatchModalComponent, EditMatchModalComponent, ManageTeamsModalComponent } from '../../components';
 
 @Component({
   selector: 'matches',
-  imports: [CommonModule, FormsModule, PopoverModule, ModalModule, SharedLayoutComponent],
+  imports: [CommonModule, FormsModule, PopoverModule, ModalModule, SharedLayoutComponent, CreateMatchModalComponent, EditMatchModalComponent, ManageTeamsModalComponent],
   templateUrl: './matches.html',
   styleUrl: './matches.scss'
 })
@@ -44,7 +44,7 @@ export class MatchesComponent implements OnInit {
     {
       label: 'Create Match',
       icon: 'bi-plus',
-      handler: () => this.openCreateModal(null)
+      handler: () => this.openCreateModal()
     }
   ];
 
@@ -71,41 +71,13 @@ export class MatchesComponent implements OnInit {
   }
 
   // Modal methods
-  openCreateModal(template: any) {
-    this.matchForm = { round: 1, position: 1, scheduledDate: '', winnerId: '', status: 'pending' };
-    this.createModalRef = this.modalService.show(template);
+  openCreateModal() {
+    this.showCreateModal = true;
   }
 
-  openEditModal(match: IKnockoutMatch, template: any) {
+  openEditModal(match: IKnockoutMatch) {
     this.selectedMatch = match;
-    let dateString = '';
-    if (match.scheduledDate) {
-      try {
-        let jsDate: Date;
-        const dateObj = match.scheduledDate as any;
-        if (dateObj.toDate && typeof dateObj.toDate === 'function') {
-          // Firestore Timestamp
-          jsDate = dateObj.toDate();
-        } else if (match.scheduledDate instanceof Date) {
-          jsDate = match.scheduledDate;
-        } else {
-          jsDate = new Date(match.scheduledDate);
-        }
-        if (!isNaN(jsDate.getTime())) {
-          dateString = jsDate.toISOString().split('T')[0];
-        }
-      } catch (error) {
-        console.warn('Invalid date format:', match.scheduledDate);
-      }
-    }
-    this.matchForm = { 
-      round: match.round, 
-      position: match.position,
-      scheduledDate: dateString,
-      winnerId: match.winner?.id || '',
-      status: match.status
-    };
-    this.editModalRef = this.modalService.show(template);
+    this.showEditModal = true;
   }
 
   openManageTeamsModal(match: IKnockoutMatch) {
@@ -115,53 +87,48 @@ export class MatchesComponent implements OnInit {
   }
 
   closeModals() {
-    this.createModalRef?.hide();
-    this.editModalRef?.hide();
+    this.showCreateModal = false;
+    this.showEditModal = false;
     this.showManageTeamsModal = false;
     this.selectedMatch = null;
-    this.matchForm = { round: 1, position: 1, scheduledDate: '', winnerId: '', status: 'pending' };
     this.selectedTeams = [];
   }
 
-  async createMatch() {
-    if (!this.matchForm.round || !this.matchForm.position) return;
-    
+  async createMatch(formData: any) {
     try {
       await this.matchService.createMatch({
         tournamentId: this.tournamentId,
-        round: this.matchForm.round,
-        position: this.matchForm.position,
+        round: formData.round,
+        position: formData.position,
         status: 'pending',
-        scheduledDate: this.matchForm.scheduledDate ? new Date(this.matchForm.scheduledDate) : undefined
+        scheduledDate: formData.scheduledDate ? new Date(formData.scheduledDate) : undefined
       });
       
-      this.closeModals();
       await this.loadData();
     } catch (error) {
       console.error('Error creating match:', error);
     }
   }
 
-  async updateMatch() {
+  async updateMatch(formData: any) {
     if (!this.selectedMatch) return;
     
     const updateData: any = {
-      round: this.matchForm.round,
-      position: this.matchForm.position,
-      status: this.matchForm.status as 'pending' | 'in-progress' | 'completed'
+      round: formData.round,
+      position: formData.position,
+      status: formData.status as 'pending' | 'in-progress' | 'completed'
     };
     
-    if (this.matchForm.scheduledDate) {
-      updateData.scheduledDate = new Date(this.matchForm.scheduledDate);
+    if (formData.scheduledDate) {
+      updateData.scheduledDate = new Date(formData.scheduledDate);
     }
     
-    if (this.matchForm.winnerId) {
-      updateData.winner = this.availableTeams.find(t => t.id === this.matchForm.winnerId);
+    if (formData.winnerId) {
+      updateData.winner = this.availableTeams.find(t => t.id === formData.winnerId);
     }
     
     try {
       await this.matchService.updateMatch(this.selectedMatch.id!, updateData);
-      this.closeModals();
       await this.loadData();
     } catch (error) {
       console.error('Error updating match:', error);
@@ -183,10 +150,10 @@ export class MatchesComponent implements OnInit {
     }
   }
 
-  async saveMatchTeams() {
+  async saveMatchTeams(teamIds: string[]) {
     if (!this.selectedMatch) return;
     
-    const [team1Id, team2Id] = this.selectedTeams;
+    const [team1Id, team2Id] = teamIds;
     const team1 = this.availableTeams.find(t => t.id === team1Id);
     const team2 = this.availableTeams.find(t => t.id === team2Id);
     
@@ -195,7 +162,6 @@ export class MatchesComponent implements OnInit {
         team1: team1 || undefined,
         team2: team2 || undefined
       });
-      this.closeModals();
       await this.loadData();
     } catch (error) {
       console.error('Error updating match teams:', error);

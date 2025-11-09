@@ -9,7 +9,7 @@
   emptyActionText="Create Match"
   emptyActionIcon="bi-plus"
   [actions]="headerActions"
-  (emptyAction)="openCreateModal(createMatchModal)">
+  (emptyAction)="openCreateModal()">
   
   <div *ngIf="matches.length > 0" class="row">
       <div *ngFor="let match of matches" class="col-md-6 col-lg-4 col-xl-3">
@@ -21,7 +21,7 @@
               <button class="btn btn-outline-secondary" (click)="openManageTeamsModal(match)" title="Manage teams">
                 <i class="bi bi-gear"></i>
               </button>
-              <button class="btn btn-outline-primary" (click)="openEditModal(match, editMatchModal)" title="Edit match">
+              <button class="btn btn-outline-primary" (click)="openEditModal(match)" title="Edit match">
                 <i class="bi bi-pencil"></i>
               </button>
               <button class="btn btn-outline-danger" (click)="deleteMatch(match.id!)" title="Delete match">
@@ -69,103 +69,24 @@
   
 </app-shared-layout>
 
-<!-- Create Match Modal -->
-<ng-template #createMatchModal>
-  <div class="modal-header">
-    <h4 class="modal-title">Create New Match</h4>
-    <button type="button" class="btn-close" (click)="createModalRef?.hide()"></button>
-  </div>
-  <div class="modal-body">
-    <form (ngSubmit)="createMatch()">
-      <div class="mb-3">
-        <label class="form-label">Round:</label>
-        <input type="number" [(ngModel)]="matchForm.round" name="round" min="1" required class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Position:</label>
-        <input type="number" [(ngModel)]="matchForm.position" name="position" min="1" required class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Scheduled Date (Optional):</label>
-        <input type="date" [(ngModel)]="matchForm.scheduledDate" name="scheduledDate" class="form-control">
-      </div>
-      <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-secondary" (click)="createModalRef?.hide()">Cancel</button>
-        <button type="submit" class="btn btn-primary">Create</button>
-      </div>
-    </form>
-  </div>
-</ng-template>
+<app-create-match-modal
+  [show]="showCreateModal"
+  (closed)="closeModals()"
+  (created)="createMatch($event)">
+</app-create-match-modal>
 
-<!-- Edit Match Modal -->
-<ng-template #editMatchModal>
-  <div class="modal-header">
-    <h4 class="modal-title">Edit Match</h4>
-    <button type="button" class="btn-close" (click)="editModalRef?.hide()"></button>
-  </div>
-  <div class="modal-body">
-    <form (ngSubmit)="updateMatch()">
-      <div class="mb-3">
-        <label class="form-label">Round:</label>
-        <input type="number" [(ngModel)]="matchForm.round" name="round" min="1" required class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Position:</label>
-        <input type="number" [(ngModel)]="matchForm.position" name="position" min="1" required class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Scheduled Date (Optional):</label>
-        <input type="date" [(ngModel)]="matchForm.scheduledDate" name="scheduledDate" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Status:</label>
-        <select [(ngModel)]="matchForm.status" name="status" required class="form-control">
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
-        </select>
-      </div>
-      <div class="mb-3" *ngIf="getMatchTeamsForEdit().length > 0">
-        <label class="form-label">Winner (Optional):</label>
-        <select [(ngModel)]="matchForm.winnerId" name="winnerId" class="form-control">
-          <option value="">No Winner</option>
-          <option *ngFor="let team of getMatchTeamsForEdit()" [value]="team.id">{{ team.name }}</option>
-        </select>
-      </div>
-      <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-secondary" (click)="editModalRef?.hide()">Cancel</button>
-        <button type="submit" class="btn btn-primary">Update</button>
-      </div>
-    </form>
-  </div>
-</ng-template>
+<app-edit-match-modal
+  [show]="showEditModal"
+  [match]="selectedMatch"
+  [availableTeams]="getMatchTeamsForEdit()"
+  (closed)="closeModals()"
+  (updated)="updateMatch($event)">
+</app-edit-match-modal>
 
-<!-- Manage Teams Modal -->
-<div *ngIf="showManageTeamsModal" class="modal-overlay" (click)="closeModals()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <h3>Manage Match Teams</h3>
-    <p>Select up to 2 teams for this match:</p>
-    
-    <div class="teams-list">
-      <div *ngFor="let team of getAvailableTeamsForMatch()" 
-           class="team-item" 
-           [class.selected]="isTeamSelected(team.id!)"
-           (click)="toggleTeamSelection(team.id!)">
-        <span>{{ team.name }}</span>
-        <span class="player-count">({{ team.playerIds.length }} players)</span>
-      </div>
-    </div>
-    
-    <div class="selected-teams">
-      <h4>Selected Teams ({{ selectedTeams.length }}/2):</h4>
-      <div *ngFor="let teamId of selectedTeams" class="selected-team">
-        {{ getTeamNameById(teamId) }}
-      </div>
-    </div>
-    
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
-      <button type="button" class="btn btn-primary" (click)="saveMatchTeams()">Save Teams</button>
-    </div>
-  </div>
-</div>
+<app-manage-teams-modal
+  [show]="showManageTeamsModal"
+  [availableTeams]="getAvailableTeamsForMatch()"
+  [selectedTeams]="selectedTeams"
+  (closed)="closeModals()"
+  (teamsUpdated)="saveMatchTeams($event)">
+</app-manage-teams-modal>
