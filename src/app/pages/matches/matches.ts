@@ -8,6 +8,7 @@ import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 import { ConfirmationModalService, MatchService, TeamService } from '../../services';
 import { IKnockoutMatch, ITeam } from '../../models';
 import { SharedLayoutComponent, CreateMatchModalComponent, EditMatchModalComponent, ManageTeamsModalComponent } from '../../components';
+import { DateUtils, StatusUtils } from '../../utils';
 
 @Component({
   selector: 'matches',
@@ -225,34 +226,6 @@ export class MatchesComponent implements OnInit {
     return [this.selectedMatch.team1, this.selectedMatch.team2].filter(Boolean) as ITeam[];
   }
 
-  getFormattedDate(date: any): string {
-    if (!date) return '';
-    try {
-      let jsDate: Date;
-      if (date.toDate && typeof date.toDate === 'function') {
-        // Firestore Timestamp
-        jsDate = date.toDate();
-      } else if (date instanceof Date) {
-        jsDate = date;
-      } else {
-        jsDate = new Date(date);
-      }
-      return jsDate.toLocaleDateString(); // + ' ' + jsDate.toLocaleTimeString();
-    } catch (error) {
-      return 'Invalid Date';
-    }
-  }
-
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'pending':
-        return 'text-bg-danger';
-      case 'in-progress':
-        return 'text-bg-warning';
-      case 'completed':
-        return 'text-bg-success';
-      default:
-        return 'text-bg-secondary';
-    }
-  }
+  getFormattedDate = DateUtils.getFormattedDate;
+  getStatusBadgeClass = StatusUtils.getStatusBadgeClass;
 }

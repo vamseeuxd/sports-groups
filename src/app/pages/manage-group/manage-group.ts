@@ -51,7 +51,7 @@ export class ManageGroup {
     } catch (error) {
       this.confirmationModal.confirm(
         'Error',
-        APP_CONSTANTS.MESSAGES.ERRORS.CREATE_GROUP_FAILED,
+        'Failed to create group. Please try again.',
         true
       );
     } finally {
@@ -62,7 +62,7 @@ export class ManageGroup {
     if (!group.id) return;
     const confirmed = await this.confirmationModal.confirm(
       '<i class="bi bi-trash3-fill"></i> Delete Group',
-      `<h5>${APP_CONSTANTS.MESSAGES.CONFIRMATIONS.DELETE_GROUP} "${group.name}"?</h5>`
+      `<h5>Are you sure you want to delete "${group.name}"?</h5>`
     );
     if (!confirmed) return;
     
@@ -72,7 +72,7 @@ export class ManageGroup {
     } catch (error) {
       this.confirmationModal.confirm(
         'Error',
-        APP_CONSTANTS.MESSAGES.ERRORS.DELETE_GROUP_FAILED,
+        'Failed to delete group. Please try again.',
         true
       );
     } finally {
@@ -102,7 +102,7 @@ export class ManageGroup {
     } catch (error) {
       this.confirmationModal.confirm(
         'Error',
-        APP_CONSTANTS.MESSAGES.ERRORS.UPDATE_GROUP_FAILED,
+        'Failed to update group. Please try again.',
         true
       );
     } finally {

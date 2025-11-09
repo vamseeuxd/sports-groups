@@ -11,6 +11,7 @@ import { ITournament } from '../../models/group.model';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { CopyToClipboardDirective } from '../../directives';
 import { SharedLayoutComponent, QrCodeModalComponent } from '../../components';
+import { DateUtils } from '../../utils';
 
 @Component({
   selector: 'app-manage-tournaments',
@@ -113,12 +114,7 @@ export class ManageTournaments {
     this.router.navigate(['/groups']);
   }
 
-  formatDateForDisplay(date: any): Date {
-    if (date && date.toDate) {
-      return date.toDate();
-    }
-    return new Date(date);
-  }
+  formatDateForDisplay = DateUtils.formatDateForDisplay;
 
   showQRCode(tournament: ITournament) {
     this.selectedTournament = tournament;

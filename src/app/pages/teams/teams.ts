@@ -22,7 +22,6 @@ export class TeamsComponent implements OnInit {
   private playerService = inject(PlayerRegistrationService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  ativeCard = '';
   
   teams: ITeam[] = [];
   availablePlayers: IPlayerRegistration[] = [];

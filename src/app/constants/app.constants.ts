@@ -9,18 +9,31 @@ export const APP_CONSTANTS = {
   },
   VALIDATION: {
     GROUP_NAME_MAX_LENGTH: 50,
-    GROUP_NAME_MIN_LENGTH: 1
+    GROUP_NAME_MIN_LENGTH: 1,
+    TEAM_NAME_MAX_LENGTH: 50,
+    TEAM_NAME_MIN_LENGTH: 1,
+    PLAYER_NAME_MAX_LENGTH: 50,
+    PLAYER_NAME_MIN_LENGTH: 2
   },
   MESSAGES: {
     ERRORS: {
       INVALID_GROUP_NAME: 'Group name must be between 1 and 50 characters',
       DUPLICATE_GROUP_NAME: 'Group name already exists!',
-      CREATE_GROUP_FAILED: 'Failed to create group. Please try again.',
-      UPDATE_GROUP_FAILED: 'Failed to update group. Please try again.',
-      DELETE_GROUP_FAILED: 'Failed to delete group. Please try again.'
+      CREATE_FAILED: 'Failed to create {0}. Please try again.',
+      UPDATE_FAILED: 'Failed to update {0}. Please try again.',
+      DELETE_FAILED: 'Failed to delete {0}. Please try again.',
+      LOAD_FAILED: 'Failed to load {0}. Please try again.'
     },
     CONFIRMATIONS: {
-      DELETE_GROUP: 'Are you sure you want to delete'
+      DELETE_ITEM: 'Are you sure you want to delete "{0}"?'
+    }
+  },
+  UI: {
+    LOADING_MESSAGES: {
+      TOURNAMENTS: 'Loading tournaments...',
+      TEAMS: 'Loading teams...',
+      PLAYERS: 'Loading players...',
+      MATCHES: 'Loading matches...'
     }
   }
 };

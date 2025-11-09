@@ -5,17 +5,19 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class LoaderService {
-  loaders: number[] = [];
-  loaderAction: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(this.loaders);
+  private loaders: number[] = [];
+  private loaderAction = new BehaviorSubject<number[]>(this.loaders);
   loaders$ = this.loaderAction.asObservable();
-  show() {
-    const id = new Date().getTime();
+  
+  show(): number {
+    const id = Date.now();
     this.loaders.push(id);
-    this.loaderAction.next(this.loaders);
+    this.loaderAction.next([...this.loaders]);
     return id;
   }
-  hide(id: number) {
-    this.loaders = this.loaders.filter((loader) => loader !== id);
-    this.loaderAction.next(this.loaders);
+  
+  hide(id: number): void {
+    this.loaders = this.loaders.filter(loader => loader !== id);
+    this.loaderAction.next([...this.loaders]);
   }
 }
