@@ -10,6 +10,7 @@ export * from './match-modals/manage-teams-modal.component';
 export * from './team-modals/create-team-modal.component';
 export * from './team-modals/edit-team-modal.component';
 export * from './team-modals/manage-players-modal.component';
+export * from './team-modals/unassigned-players-modal.component';
 export * from './player-modals/add-player-modal.component';
 export * from './player-modals/bulk-upload-modal.component';
 export * from './player-modals/edit-player-modal.component';

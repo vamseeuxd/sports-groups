@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PopoverModule } from 'ngx-bootstrap/popover';
-import { CopyToClipboardDirective } from '../../directives';
+
 import { TeamService } from '../../services';
 import { PlayerRegistrationService } from '../../services/player-registration.service';
 import { IPlayerRegistration, ITeam, ITeamPlayer } from '../../models';
-import { SharedLayoutComponent, CreateTeamModalComponent, EditTeamModalComponent, ManagePlayersModalComponent } from '../../components';
+import { SharedLayoutComponent, CreateTeamModalComponent, EditTeamModalComponent, ManagePlayersModalComponent, UnassignedPlayersModalComponent } from '../../components';
 
 @Component({
   selector: 'teams',
-  imports: [CommonModule, FormsModule, CopyToClipboardDirective, PopoverModule, SharedLayoutComponent, CreateTeamModalComponent, EditTeamModalComponent, ManagePlayersModalComponent],
+  imports: [CommonModule, FormsModule, PopoverModule, SharedLayoutComponent, CreateTeamModalComponent, EditTeamModalComponent, ManagePlayersModalComponent, UnassignedPlayersModalComponent],
   templateUrl: './teams.html',
   styleUrl: './teams.scss'
 })
@@ -32,6 +32,7 @@ export class TeamsComponent implements OnInit {
   showCreateModal = false;
   showEditModal = false;
   showManagePlayersModal = false;
+  showUnassignedPlayersModal = false;
   
   // Form data
   teamForm = { name: '' };
@@ -91,10 +92,19 @@ export class TeamsComponent implements OnInit {
     this.showManagePlayersModal = true;
   }
 
+  openUnassignedPlayersModal() {
+    this.showUnassignedPlayersModal = true;
+  }
+
+  closeUnassignedPlayersModal() {
+    this.showUnassignedPlayersModal = false;
+  }
+
   closeModals() {
     this.showCreateModal = false;
     this.showEditModal = false;
     this.showManagePlayersModal = false;
+    this.showUnassignedPlayersModal = false;
     this.selectedTeam = null;
     this.teamForm = { name: '' };
     this.selectedPlayers = [];

@@ -14,70 +14,58 @@
   <div *ngIf="!loading">
     <!-- Debug Info -->
     <div class="alert alert-warning mb-3 py-1 text-center" role="alert">
-      <small>Total Available Players: {{availablePlayers.length}} | Unassigned:
-        {{getUnassignedPlayers().length}}</small>
+      <small>Total Available Players: 
+        {{availablePlayers.length}}
+        | 
+        <button class="btn btn-link p-0 text-decoration-underline" 
+                style="font-size: inherit; vertical-align: baseline;"
+                (click)="openUnassignedPlayersModal()">
+                Unassigned: {{getUnassignedPlayers().length}}
+        </button> 
+      </small>
     </div>
 
       <div class="row" *ngIf="teams.length > 0">
-        <div class="col-md-6 mb-3" *ngFor="let team of teams">
-          <div class="card team-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h6 class="m-0 p-0 d-flex align-items-center" style="cursor: pointer;"
-                (click)="ativeCard = ativeCard === (team.id ?? '') ? '' : (team.id ?? '')">
-                {{team.name}}
-                <span class="badge text-bg-warning fw-normal ms-2"
-                  style="font-size: 0.6rem;">{{getTeamPlayers(team).length}} player(s)</span>
-              </h6>
-              <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-secondary" (click)="openEditModal(team)" title="Edit team">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-outline-primary" (click)="openManagePlayersModal(team)" title="Manage players">
-                  <i class="bi bi-people"></i>
-                </button>
-                <button class="btn btn-outline-danger" (click)="deleteTeam(team.id!)" title="Delete team">
-                  <i class="bi bi-trash"></i>
-                </button>
+        <div class="col-md-6 col-lg-4 col-xl-3" *ngFor="let team of teams">
+          <div class="mb-2 shadow-sm p-2 border">
+            <div class="card team-card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="m-0 p-0 d-flex align-items-center" style="cursor: pointer;"
+                  (click)="ativeCard = ativeCard === (team.id ?? '') ? '' : (team.id ?? '')">
+                  {{team.name}}
+                  <span class="badge text-bg-warning fw-normal ms-2"
+                    style="font-size: 0.6rem;">{{getTeamPlayers(team).length}} player(s)</span>
+                </h6>
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-outline-secondary" (click)="openEditModal(team)" title="Edit team">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline-primary" (click)="openManagePlayersModal(team)" title="Manage players">
+                    <i class="bi bi-people"></i>
+                  </button>
+                  <button class="btn btn-outline-danger" (click)="deleteTeam(team.id!)" title="Delete team">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div class="card-body" *ngIf="ativeCard == team.id" style="overflow-y: auto;max-height: 250px;">
-              <div *ngIf="getTeamPlayers(team).length === 0" class="text-muted small">
-                No players assigned
-              </div>
-              <div *ngFor="let player of getTeamPlayers(team)"
-                class="d-flex justify-content-between align-items-center mb-1 py-1 border-bottom">
-                <span>
-                  {{player.playerName}}
-                  <span *ngIf="player.isCaptain" class="badge text-bg-warning fw-normal ms-2">Captain</span>
-                </span>
+              <div class="card-body" *ngIf="ativeCard == team.id" style="overflow-y: auto;max-height: 250px;">
+                <div *ngIf="getTeamPlayers(team).length === 0" class="text-muted small">
+                  No players assigned
+                </div>
+                <div *ngFor="let player of getTeamPlayers(team)"
+                  class="d-flex justify-content-between align-items-center mb-1 py-1 border-bottom">
+                  <span>
+                    {{player.playerName}}
+                    <span *ngIf="player.isCaptain" class="badge text-bg-warning fw-normal ms-2">Captain</span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div *ngIf="getUnassignedPlayers().length > 0" class="card team-card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h6 class="m-0 p-0 d-flex align-items-center" (click)="ativeCard = ativeCard === 'players' ? '' : 'players'">
-            <i class="bi bi-person-x me-2"></i> Unassigned Players ({{getUnassignedPlayers().length}})
-          </h6>
-        </div>
-        <div class="list-group" style="overflow-y: auto;max-height: 250px;">
-          @if (ativeCard == 'players') {
-          <div *ngFor="let player of getUnassignedPlayers()"
-            class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="flex-grow-1">
-              <strong>{{player.playerName}}</strong>
-              <small class="text-muted d-block" appCopyToClipboard="{{player.playerEmail}}"
-                copySuccessMessage="Email copied!" style="cursor: pointer;" title="Click to copy email">
-                {{player.playerEmail}}
-                <i class="bi bi-copy ms-1"></i>
-              </small>
-            </div>
-          </div>
-          }
-        </div>
-      </div>
+
     </div>
   
 </app-shared-layout>
@@ -105,3 +93,9 @@
   (closed)="closeModals()"
   (playersUpdated)="saveTeamPlayers($event)">
 </app-manage-players-modal>
+
+<app-unassigned-players-modal
+  [show]="showUnassignedPlayersModal"
+  [unassignedPlayers]="getUnassignedPlayers()"
+  (closed)="closeUnassignedPlayersModal()">
+</app-unassigned-players-modal>
