@@ -123,8 +123,11 @@ export class MatchesComponent implements OnInit {
       updateData.scheduledDate = new Date(formData.scheduledDate);
     }
     
+    // Handle winner selection - explicitly set to null if no winner selected
     if (formData.winnerId) {
       updateData.winner = this.availableTeams.find(t => t.id === formData.winnerId);
+    } else {
+      updateData.winner = null;
     }
     
     try {
@@ -237,6 +240,19 @@ export class MatchesComponent implements OnInit {
       return jsDate.toLocaleDateString(); // + ' ' + jsDate.toLocaleTimeString();
     } catch (error) {
       return 'Invalid Date';
+    }
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'pending':
+        return 'text-bg-danger';
+      case 'in-progress':
+        return 'text-bg-warning';
+      case 'completed':
+        return 'text-bg-success';
+      default:
+        return 'text-bg-secondary';
     }
   }
 }

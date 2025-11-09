@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModalComponent } from '../shared-modal/shared-modal.component';
@@ -50,7 +50,7 @@ import { IKnockoutMatch, ITeam } from '../../models';
     </app-shared-modal>
   `
 })
-export class EditMatchModalComponent {
+export class EditMatchModalComponent implements OnChanges {
   @Input() show = false;
   @Input() match: IKnockoutMatch | null = null;
   @Input() availableTeams: ITeam[] = [];
@@ -59,28 +59,35 @@ export class EditMatchModalComponent {
 
   form = { round: 1, position: 1, scheduledDate: '', status: 'pending', winnerId: '' };
 
-  ngOnChanges() {
-    if (this.match) {
-      let dateString = '';
-      if (this.match.scheduledDate) {
-        try {
-          const dateObj = this.match.scheduledDate as any;
-          const jsDate = dateObj.toDate ? dateObj.toDate() : new Date(this.match.scheduledDate);
-          if (!isNaN(jsDate.getTime())) {
-            dateString = jsDate.toISOString().split('T')[0];
-          }
-        } catch (error) {
-          console.warn('Invalid date format:', this.match.scheduledDate);
-        }
-      }
-      this.form = {
-        round: this.match.round,
-        position: this.match.position,
-        scheduledDate: dateString,
-        status: this.match.status,
-        winnerId: this.match.winner?.id || ''
-      };
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['match'] && this.match) {
+      this.initializeForm();
     }
+  }
+
+  private initializeForm() {
+    if (!this.match) return;
+    
+    let dateString = '';
+    if (this.match.scheduledDate) {
+      try {
+        const dateObj = this.match.scheduledDate as any;
+        const jsDate = dateObj.toDate ? dateObj.toDate() : new Date(this.match.scheduledDate);
+        if (!isNaN(jsDate.getTime())) {
+          dateString = jsDate.toISOString().split('T')[0];
+        }
+      } catch (error) {
+        console.warn('Invalid date format:', this.match.scheduledDate);
+      }
+    }
+    
+    this.form = {
+      round: this.match.round,
+      position: this.match.position,
+      scheduledDate: dateString,
+      status: this.match.status || 'pending',
+      winnerId: this.match.winner?.id || ''
+    };
   }
 
   isValid() {

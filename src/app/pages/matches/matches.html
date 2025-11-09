@@ -51,8 +51,8 @@
           </div>
           
           <div class="match-info d-flex align-items-center w-100 mt-2">
-            <div class="badge text-bg-danger fw-normal fs-6 me-auto">{{ match.status | titlecase}}</div>
-            <div *ngIf="match.scheduledDate" class="badge text-bg-secondary fw-normal fs-6" [class.ms-auto]="!match.winner" [class.mx-auto]="match.winner">
+            <div class="badge fw-normal fs-6 me-auto" [class]="getStatusBadgeClass(match.status)">{{ match.status | titlecase}}</div>
+            <div *ngIf="match.scheduledDate" class="badge text-bg-secondary fw-normal fs-6" [class.ms-auto]="match.status !== 'completed'" [class.mx-auto]="match.status === 'completed'">
               <i class="bi bi-calendar3 me-1"></i> {{ getFormattedDate(match.scheduledDate) }}
             </div>          
             <ng-container *ngIf="match.status === 'completed'">
