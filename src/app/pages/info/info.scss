@@ -171,5 +171,7 @@
 
   .tournament-body {
     padding: 16px;
+    max-height: calc(100dvh - 210px);
+    min-height: calc(100dvh - 210px);
   }
 }

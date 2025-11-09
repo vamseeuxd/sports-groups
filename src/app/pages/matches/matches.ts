@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PopoverModule } from 'ngx-bootstrap/popover';
+import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 import { ConfirmationModalService, MatchService, TeamService } from '../../services';
 import { IKnockoutMatch, ITeam } from '../../models';
 
 @Component({
   selector: 'matches',
-  imports: [CommonModule, FormsModule, PopoverModule],
+  imports: [CommonModule, FormsModule, PopoverModule, ModalModule],
   templateUrl: './matches.html',
   styleUrl: './matches.scss'
 })
@@ -19,6 +20,10 @@ export class MatchesComponent implements OnInit {
   private matchService = inject(MatchService);
   private teamService = inject(TeamService);
   private confirmationModal = inject(ConfirmationModalService);
+  private modalService = inject(BsModalService);
+  
+  createModalRef?: BsModalRef;
+  editModalRef?: BsModalRef;
   
   matches: IKnockoutMatch[] = [];
   availableTeams: ITeam[] = [];
@@ -57,12 +62,12 @@ export class MatchesComponent implements OnInit {
   }
 
   // Modal methods
-  openCreateModal() {
+  openCreateModal(template: any) {
     this.matchForm = { round: 1, position: 1, scheduledDate: '', winnerId: '', status: 'pending' };
-    this.showCreateModal = true;
+    this.createModalRef = this.modalService.show(template);
   }
 
-  openEditModal(match: IKnockoutMatch) {
+  openEditModal(match: IKnockoutMatch, template: any) {
     this.selectedMatch = match;
     let dateString = '';
     if (match.scheduledDate) {
@@ -91,7 +96,7 @@ export class MatchesComponent implements OnInit {
       winnerId: match.winner?.id || '',
       status: match.status
     };
-    this.showEditModal = true;
+    this.editModalRef = this.modalService.show(template);
   }
 
   openManageTeamsModal(match: IKnockoutMatch) {
@@ -101,8 +106,8 @@ export class MatchesComponent implements OnInit {
   }
 
   closeModals() {
-    this.showCreateModal = false;
-    this.showEditModal = false;
+    this.createModalRef?.hide();
+    this.editModalRef?.hide();
     this.showManageTeamsModal = false;
     this.selectedMatch = null;
     this.matchForm = { round: 1, position: 1, scheduledDate: '', winnerId: '', status: 'pending' };

@@ -35,10 +35,10 @@
       </div> 
       
       <nav class="nav nav-pills nav-justified nav-fill mt-3 bg-warning p-1 rounded">
-        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'info'" [class.active]="activeTab() === 'info'" (click)="setActiveTab('info')"><i class="bi bi-info-circle"></i> Info</a>
-        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'registrations'" [class.active]="activeTab() === 'registrations'" (click)="setActiveTab('registrations')"><i class="bi bi-person-plus"></i> Players</a>
-        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'teams'" [class.active]="activeTab() === 'teams'" (click)="setActiveTab('teams')"><i class="bi bi-people"></i> Teams</a>
-        <a class="nav-link text-dark" [class.text-white]="activeTab() === 'matches'" [class.active]="activeTab() === 'matches'" (click)="setActiveTab('matches')"><i class="bi bi-trophy"></i> Matches</a>
+        <a class="nav-link text-dark d-flex flex-column justify-content-center align-items-center" [class.text-white]="activeTab() === 'info'" [class.active]="activeTab() === 'info'" (click)="setActiveTab('info')"><i class="bi bi-info-circle"></i> Info</a>
+        <a class="nav-link text-dark d-flex flex-column justify-content-center align-items-center" [class.text-white]="activeTab() === 'registrations'" [class.active]="activeTab() === 'registrations'" (click)="setActiveTab('registrations')"><i class="bi bi-person-plus"></i> Players</a>
+        <a class="nav-link text-dark d-flex flex-column justify-content-center align-items-center" [class.text-white]="activeTab() === 'teams'" [class.active]="activeTab() === 'teams'" (click)="setActiveTab('teams')"><i class="bi bi-people"></i> Teams</a>
+        <a class="nav-link text-dark d-flex flex-column justify-content-center align-items-center" [class.text-white]="activeTab() === 'matches'" [class.active]="activeTab() === 'matches'" (click)="setActiveTab('matches')"><i class="bi bi-trophy"></i> Matches</a>
       </nav>
     </div>
   </div>
