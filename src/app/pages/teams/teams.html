@@ -1,7 +1,7 @@
-<app-shared-layout 
-  title="Tournament Teams" 
+<app-shared-layout
+  title="Tournament Teams"
   icon="bi-people"
-  [loading]="loading" 
+  [loading]="loading"
   loadingText="Loading teams..."
   [showEmptyState]="!loading && teams.length === 0"
   emptyText="No teams created yet. Create your first team to get started."
@@ -9,72 +9,98 @@
   emptyActionText="Create Team"
   emptyActionIcon="bi-plus"
   [actions]="headerActions"
-  (emptyAction)="openCreateModal()">
-  
+  (emptyAction)="openCreateModal()"
+>
   <div *ngIf="!loading">
     <!-- Debug Info -->
     <div class="alert alert-warning mb-3 py-1 text-center" role="alert">
-      <small>Total Available Players: 
-        {{availablePlayers.length}}
-        | 
-        <button class="btn btn-link p-0 text-decoration-underline" 
-                style="font-size: inherit; vertical-align: baseline;"
-                (click)="openUnassignedPlayersModal()">
-                Unassigned: {{getUnassignedPlayers().length}}
-        </button> 
+      <small
+        >Total Available Players:
+        {{ availablePlayers.length }}
+        |
+        <button
+          class="btn btn-link p-0 text-decoration-underline"
+          style="font-size: inherit; vertical-align: baseline"
+          (click)="openUnassignedPlayersModal()"
+        >
+          Unassigned: {{ getUnassignedPlayers().length }}
+        </button>
       </small>
     </div>
 
-      <div class="row" *ngIf="teams.length > 0">
-        <div class="col-md-6 col-lg-4 col-xl-3" *ngFor="let team of teams">
-          <div class="mb-2 shadow-sm p-2 border">
-            <div class="card team-card">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h6 class="m-0 p-0 d-flex align-items-center" style="cursor: pointer;"
-                  (click)="ativeCard = ativeCard === (team.id ?? '') ? '' : (team.id ?? '')">
-                  {{team.name}}
-                  <span class="badge text-bg-warning fw-normal ms-2"
-                    style="font-size: 0.6rem;">{{getTeamPlayers(team).length}} player(s)</span>
-                </h6>
-                <div class="btn-group btn-group-sm">
-                  <button class="btn btn-outline-secondary" (click)="openEditModal(team)" title="Edit team">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-outline-primary" (click)="openManagePlayersModal(team)" title="Manage players">
-                    <i class="bi bi-people"></i>
-                  </button>
-                  <button class="btn btn-outline-danger" (click)="deleteTeam(team.id!)" title="Delete team">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body" *ngIf="ativeCard == team.id" style="overflow-y: auto;max-height: 250px;">
-                <div *ngIf="getTeamPlayers(team).length === 0" class="text-muted small">
+    <div class="row" *ngIf="teams.length > 0">
+      <div class="col-md-6 col-lg-4 col-xl-3" *ngFor="let team of teams">
+        <div class="mb-2 shadow-sm p-2 border d-flex justify-content-between align-items-center">
+          <h6 class="m-0 p-0 d-flex align-items-center">
+            {{ team.name }}
+            <ng-template #playersPopover>
+              <div
+                class="border shadow-sm m-2 p-2"
+                style="max-height: 250px; overflow-y: auto; min-width: 200px"
+              >
+                <div *ngIf="getTeamPlayers(team).length === 0" class="text-muted small p-2">
                   No players assigned
                 </div>
-                <div *ngFor="let player of getTeamPlayers(team)"
-                  class="d-flex justify-content-between align-items-center mb-1 py-1 border-bottom">
+                <div
+                  *ngFor="let player of getSortedTeamPlayers(team); let i = index"
+                  class="d-flex justify-content-between align-items-center mb-1 py-1 px-2 border-bottom"
+                >
                   <span>
-                    {{player.playerName}}
-                    <span *ngIf="player.isCaptain" class="badge text-bg-warning fw-normal ms-2">Captain</span>
+                    <span class="fw-bold me-1">{{ i + 1 }},</span> {{ player.playerName }}
+                    <span *ngIf="player.isCaptain" class="badge text-bg-warning fw-normal ms-2"
+                      >Captain</span
+                    >
                   </span>
                 </div>
               </div>
-            </div>
+            </ng-template>
+            <span
+              class="badge text-bg-warning fw-normal ms-2"
+              style="font-size: 0.6rem; cursor: pointer"
+              #playersPopoverRef="bs-popover"
+              [popover]="playersPopover"
+              container="body"
+              placement="bottom"
+              [outsideClick]="true"
+            >
+              {{ getTeamPlayers(team).length }} player(s)
+            </span>
+          </h6>
+          <div class="btn-group btn-group-sm">
+            <button
+              class="btn btn-outline-secondary"
+              (click)="openEditModal(team)"
+              title="Edit team"
+            >
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button
+              class="btn btn-outline-primary"
+              (click)="openManagePlayersModal(team)"
+              title="Manage players"
+            >
+              <i class="bi bi-people"></i>
+            </button>
+            <button
+              class="btn btn-outline-danger"
+              (click)="deleteTeam(team.id!)"
+              title="Delete team"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
           </div>
         </div>
       </div>
-
-
     </div>
-  
+  </div>
 </app-shared-layout>
 
 <app-create-team-modal
   [show]="showCreateModal"
   [isNameTaken]="isTeamNameTaken(teamForm.name.trim())"
   (closed)="closeModals()"
-  (created)="createTeam($event)">
+  (created)="createTeam($event)"
+>
 </app-create-team-modal>
 
 <app-edit-team-modal
@@ -82,7 +108,8 @@
   [team]="selectedTeam"
   [isNameTaken]="isTeamNameTaken(teamForm.name.trim(), selectedTeam?.id)"
   (closed)="closeModals()"
-  (updated)="updateTeam($event)">
+  (updated)="updateTeam($event)"
+>
 </app-edit-team-modal>
 
 <app-manage-players-modal
@@ -91,11 +118,13 @@
   [availablePlayers]="getAvailablePlayersForTeam()"
   [selectedPlayers]="selectedPlayers"
   (closed)="closeModals()"
-  (playersUpdated)="saveTeamPlayers($event)">
+  (playersUpdated)="saveTeamPlayers($event)"
+>
 </app-manage-players-modal>
 
 <app-unassigned-players-modal
   [show]="showUnassignedPlayersModal"
   [unassignedPlayers]="getUnassignedPlayers()"
-  (closed)="closeUnassignedPlayersModal()">
+  (closed)="closeUnassignedPlayersModal()"
+>
 </app-unassigned-players-modal>

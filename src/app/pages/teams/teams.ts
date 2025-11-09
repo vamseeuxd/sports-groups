@@ -192,6 +192,15 @@ export class TeamsComponent implements OnInit {
     }).filter((p: ITeamPlayer) => p.playerName !== 'Unknown');
   }
 
+  getSortedTeamPlayers(team: ITeam): ITeamPlayer[] {
+    const players = this.getTeamPlayers(team);
+    return players.sort((a, b) => {
+      if (a.isCaptain && !b.isCaptain) return -1;
+      if (!a.isCaptain && b.isCaptain) return 1;
+      return 0;
+    });
+  }
+
   getUnassignedPlayers(): IPlayerRegistration[] {
     const assignedPlayerIds = this.teams.flatMap((team: ITeam) => team.playerIds);
     return this.availablePlayers.filter((player: IPlayerRegistration) => !assignedPlayerIds.includes(player.id!));
