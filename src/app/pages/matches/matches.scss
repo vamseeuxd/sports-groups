@@ -21,9 +21,9 @@
       font-weight: 500;
       
       &.winner {
-        background: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
+        background: var(--theme-success-light);
+        color: var(--theme-success-text);
+        border: 1px solid var(--theme-success-border);
       }
     }
     
@@ -42,7 +42,7 @@
     }
     
     .winner {
-      color: var(--bs-success);
+      color: var(--theme-success);
       font-weight: 500;
     }
   }

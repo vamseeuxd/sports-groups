@@ -74,7 +74,7 @@
 }
 
 .action-menu .btn:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--theme-overlay-light);
 }
 
 /* Modal Consistency */
@@ -125,28 +125,28 @@
 }
 
 .status-pending {
-  background-color: var(--bs-warning);
-  color: var(--bs-dark);
+  background-color: var(--theme-warning);
+  color: var(--theme-text);
 }
 
 .status-approved {
-  background-color: var(--bs-success);
-  color: var(--bs-white);
+  background-color: var(--theme-success);
+  color: var(--theme-white);
 }
 
 .status-rejected {
-  background-color: var(--bs-danger);
-  color: var(--bs-white);
+  background-color: var(--theme-danger);
+  color: var(--theme-white);
 }
 
 .status-completed {
-  background-color: var(--bs-success);
-  color: var(--bs-white);
+  background-color: var(--theme-success);
+  color: var(--theme-white);
 }
 
 .status-in-progress {
-  background-color: var(--bs-info);
-  color: var(--bs-white);
+  background-color: var(--theme-info);
+  color: var(--theme-white);
 }
 
 /* Button Consistency */
@@ -257,18 +257,18 @@
 
 /* Validation States */
 .invalid-feedback {
-  color: #dc3545;
+  color: var(--theme-danger);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 .form-control.is-invalid {
-  border-color: #dc3545;
+  border-color: var(--theme-danger);
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
 .form-control.is-invalid:focus {
-  border-color: #dc3545;
+  border-color: var(--theme-danger);
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
@@ -279,7 +279,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--theme-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -371,7 +371,7 @@
   cursor: pointer;
 
   &:hover {
-    background: white;
+    background: var(--theme-white);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(217, 163, 1, 0.15);
     border-color: var(--theme-primary);
@@ -398,7 +398,7 @@
   flex-shrink: 0;
 
   i {
-    color: white;
+    color: var(--theme-white);
     font-size: 14px;
   }
 }
@@ -429,7 +429,7 @@
 
 .sport-badge {
   background: var(--theme-primary);
-  color: white;
+  color: var(--theme-white);
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 14px;

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModalComponent } from '../shared-modal/shared-modal.component';
 import { ITeam, IPlayerRegistration } from '../../models';
@@ -26,7 +26,7 @@ import { ITeam, IPlayerRegistration } from '../../models';
               <h6 class="card-title">Available Players</h6>
               <div class="list-group" style="overflow-y: auto; max-height: var(--half-screen-height); min-height: var(--half-screen-height);">
                 <div *ngFor="let player of availablePlayers"
-                     class="list-group-item d-flex justify-content-between align-items-center"
+                     class="list-group-item d-flex justify-content-between align-items-center mb-2 shadow-sm"
                      [class.active]="isPlayerSelected(player.id!)">
                   <div>
                     <strong>{{player.playerName}}</strong>
@@ -34,10 +34,11 @@ import { ITeam, IPlayerRegistration } from '../../models';
                   </div>
                   <div>
                     <span class="badge bg-secondary me-2">{{player.gender}}</span>
-                    <input type="checkbox" 
-                           class="form-check-input" 
-                           [checked]="isPlayerSelected(player.id!)"
-                           (change)="togglePlayerSelection(player.id!)">
+                    <button class="btn btn-warning btn-sm"
+                            (click)="togglePlayerSelection(player.id!)">
+                      <i class="bi bi-bookmark" *ngIf="!isPlayerSelected(player.id!)"></i>
+                      <i class="bi bi-bookmarks-fill" *ngIf="isPlayerSelected(player.id!)"></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -50,17 +51,17 @@ import { ITeam, IPlayerRegistration } from '../../models';
               <h6 class="card-title">Selected Players ({{selectedPlayers.length}})</h6>
               <div class="list-group" style="overflow-y: auto; max-height: var(--half-screen-height); min-height: var(--half-screen-height);">
                 <div *ngFor="let playerId of selectedPlayers"
-                     class="list-group-item d-flex justify-content-between align-items-center">
+                     class="list-group-item d-flex justify-content-between align-items-center mb-2 border shadow-sm">
                   <div>
                     <strong>{{getPlayerNameById(playerId)}}</strong>
-                    <span *ngIf="team?.captainId === playerId" class="badge bg-warning text-dark ms-1">Captain</span>
+                    <span *ngIf="isCaptain(playerId)" class="badge bg-warning text-dark ms-1">Captain</span>
                   </div>
                   <div class="btn-group btn-group-sm">
-                    <button *ngIf="team?.captainId !== playerId" 
+                    <button *ngIf="!isCaptain(playerId)" 
                             class="btn btn-outline-warning btn-sm"
-                            (click)="setCaptain(playerId)" 
+                            (click)="setCaptain(playerId); $event.stopPropagation()" 
                             title="Make captain">
-                      <i class="bi bi-star"></i>
+                      <i class="bi bi-star-fill"></i>
                     </button>
                     <button class="btn btn-outline-danger btn-sm" 
                             (click)="togglePlayerSelection(playerId)"
@@ -78,6 +79,8 @@ import { ITeam, IPlayerRegistration } from '../../models';
   `
 })
 export class ManagePlayersModalComponent {
+  private cdr = inject(ChangeDetectorRef);
+  
   @Input() show = false;
   @Input() team: ITeam | null = null;
   @Input() availablePlayers: IPlayerRegistration[] = [];
@@ -85,11 +88,13 @@ export class ManagePlayersModalComponent {
   @Output() closed = new EventEmitter<void>();
   @Output() playersUpdated = new EventEmitter<{playerIds: string[], captainId?: string}>();
 
-  private captainId?: string;
+  captainId?: string;
+  private initialCaptainSet = false;
 
   ngOnChanges() {
-    if (this.team) {
+    if (this.team && !this.initialCaptainSet) {
       this.captainId = this.team.captainId;
+      this.initialCaptainSet = true;
     }
   }
 
@@ -126,6 +131,11 @@ export class ManagePlayersModalComponent {
   }
 
   close() {
+    this.initialCaptainSet = false;
     this.closed.emit();
+  }
+
+  isCaptain(playerId: string): boolean {
+    return this.captainId === playerId;
   }
 }
