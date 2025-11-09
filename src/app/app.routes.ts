@@ -25,8 +25,5 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () => import('./pages/planner/planner').then(c => c.PlannerComponent)
     },
-    {
-        path: 'copy-demo',
-        loadComponent: () => import('./pages/copy-demo/copy-demo').then(c => c.CopyDemo)
-    },
+
 ];

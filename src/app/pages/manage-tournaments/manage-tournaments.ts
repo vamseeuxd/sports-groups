@@ -7,8 +7,7 @@ import { TournamentModalService } from '../../services/tournament-modal.service'
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ITournament, SPORTS_OPTIONS } from '../../models/group.model';
-import QRCode from 'qrcode';
+import { ITournament } from '../../models/group.model';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { CopyToClipboardDirective } from '../../directives';
 import { SharedLayoutComponent, QrCodeModalComponent } from '../../components';
@@ -31,8 +30,6 @@ export class ManageTournaments {
   user$ = this.userService.user$;
   tournaments$!: Observable<ITournament[]>;
   groupId = this.route.snapshot.params['groupId'];
-  editingId: string | null = null;
-  sportsOptions = SPORTS_OPTIONS;
   showQRPopover: string | null = null;
   selectedTournament: ITournament | null = null;
   
@@ -112,20 +109,8 @@ export class ManageTournaments {
     }
   }
 
-  startEdit(tournamentId: string) {
-    this.editingId = tournamentId;
-  }
-
-  cancelEdit() {
-    this.editingId = null;
-  }
-
   goBack() {
     this.router.navigate(['/groups']);
-  }
-
-  formatDate(date: Date): string {
-    return new Date(date).toISOString().split('T')[0];
   }
 
   formatDateForDisplay(date: any): Date {

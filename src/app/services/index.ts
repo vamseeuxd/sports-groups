@@ -5,4 +5,3 @@ export * from './loader.service';
 export * from './confirmation-modal.service';
 export * from './team.service';
 export * from './match.service';
-export * from './clipboard.service';

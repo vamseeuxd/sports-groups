@@ -2,8 +2,6 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LoaderService } from './services/loader.service';
 import { CommonModule } from '@angular/common';
-import { UpdateService } from './services/update.service';
-
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, CommonModule],
@@ -12,5 +10,4 @@ import { UpdateService } from './services/update.service';
 })
 export class App {
   loader = inject(LoaderService);
-  private updateService = inject(UpdateService);
 }

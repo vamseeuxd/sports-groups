@@ -67,12 +67,3 @@ export interface IKnockoutMatch {
   nextMatchId?: string;
 }
 
-export interface IKnockoutTournament {
-  tournamentId: string;
-  teams: ITeam[];
-  matches: IKnockoutMatch[];
-  totalRounds: number;
-  currentRound: number;
-  status: 'draft' | 'active' | 'completed';
-  id?: string;
-}
