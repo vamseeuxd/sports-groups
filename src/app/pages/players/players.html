@@ -72,126 +72,27 @@
   
 </app-shared-layout>
 
-<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h6 class="modal-title">New Player Registration</h6>
-        <button type="button" class="btn-close" (click)="closeModal()"></button>
-      </div>
-      <div class="modal-body">
-        <app-player-registration-form
-          [tournament]="tournament()"
-          [(playerName)]="playerName"
-          [showTournamentCard]="false"
-          [(playerEmail)]="playerEmail"
-          (registrationSuccess)="onRegistrationSuccess()"
-          (resetRequested)="closeModal()"
-        />
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal" (click)="closeModal()"></div>
+<app-add-player-modal
+  [show]="showModal"
+  [tournament]="tournament()"
+  (closed)="closeModal()"
+  (success)="onRegistrationSuccess()">
+</app-add-player-modal>
 
-<div class="modal fade" [class.show]="showBulkModal" [style.display]="showBulkModal ? 'block' : 'none'" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h6 class="modal-title">Bulk Upload Players</h6>
-        <button type="button" class="btn-close" (click)="closeBulkModal()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Upload CSV File</label>
-          <input type="file" class="form-control" accept=".csv" (change)="onFileSelected($event)" #fileInput>
-          <div class="form-text">
-            CSV should contain columns: playerName, playerEmail, gender, mobileNumber
-            <br>
-            <button type="button" class="btn btn-link p-0 text-primary" (click)="downloadSampleCSV()">Download sample CSV</button>
-          </div>
-        </div>
-        
-        @if (csvErrors.length > 0) {
-          <div class="alert alert-danger">
-            <h6>Validation Errors:</h6>
-            <ul class="mb-0">
-              @for (error of csvErrors; track $index) {
-                <li>{{ error }}</li>
-              }
-            </ul>
-          </div>
-        }
-        
-        @if (csvData.length > 0 && csvErrors.length === 0) {
-          <div class="alert alert-success">
-            <i class="bi bi-check-circle"></i> {{ csvData.length }} valid players found
-          </div>
-          <div class="list-group" style="max-height: 300px; overflow-y: auto;">
-            @for (player of csvData; track $index) {
-              <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div class="flex-grow-1">
-                    <h6 class="mb-1">{{ player.playerName }}</h6>
-                    <p class="mb-1 text-muted small">{{ player.playerEmail }}</p>
-                    <small class="text-muted">{{ player.gender | titlecase }} • {{ player.mobileNumber }}</small>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeBulkModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="uploadPlayers()" [disabled]="csvData.length === 0 || csvErrors.length > 0 || uploading">
-          @if (uploading) {
-            <span class="spinner-border spinner-border-sm me-2"></span>
-          }
-          Upload {{ csvData.length }} Players
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal-backdrop fade" [class.show]="showBulkModal" *ngIf="showBulkModal" (click)="closeBulkModal()"></div>
+<app-bulk-upload-modal
+  [show]="showBulkModal"
+  [csvData]="csvData"
+  [csvErrors]="csvErrors"
+  [uploading]="uploading"
+  (closed)="closeBulkModal()"
+  (fileSelected)="onFileSelected($event)"
+  (uploadRequested)="uploadPlayers()"
+  (downloadSampleRequested)="downloadSampleCSV()">
+</app-bulk-upload-modal>
 
-<div class="modal fade" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h6 class="modal-title">Edit Player</h6>
-        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
-      </div>
-      <div class="modal-body">
-        @if (editingPlayer) {
-          <div class="mb-3">
-            <label class="form-label">Player Name *</label>
-            <input type="text" class="form-control" [(ngModel)]="editingPlayer.playerName">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Email Address *</label>
-            <input type="email" class="form-control" [(ngModel)]="editingPlayer.playerEmail">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Gender *</label>
-            <select class="form-control" [(ngModel)]="editingPlayer.gender">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Mobile Number *</label>
-            <input type="tel" class="form-control" [(ngModel)]="editingPlayer.mobileNumber">
-          </div>
-        }
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="updatePlayer()">Update Player</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal-backdrop fade" [class.show]="showEditModal" *ngIf="showEditModal" (click)="closeEditModal()"></div>
+<app-edit-player-modal
+  [show]="showEditModal"
+  [player]="editingPlayer"
+  (closed)="closeEditModal()"
+  (updated)="updatePlayer($event)">
+</app-edit-player-modal>

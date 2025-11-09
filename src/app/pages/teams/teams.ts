@@ -7,11 +7,11 @@ import { CopyToClipboardDirective } from '../../directives';
 import { TeamService } from '../../services';
 import { PlayerRegistrationService } from '../../services/player-registration.service';
 import { IPlayerRegistration, ITeam, ITeamPlayer } from '../../models';
-import { SharedLayoutComponent } from '../../components';
+import { SharedLayoutComponent, CreateTeamModalComponent, EditTeamModalComponent, ManagePlayersModalComponent } from '../../components';
 
 @Component({
   selector: 'teams',
-  imports: [CommonModule, FormsModule, CopyToClipboardDirective, PopoverModule, SharedLayoutComponent],
+  imports: [CommonModule, FormsModule, CopyToClipboardDirective, PopoverModule, SharedLayoutComponent, CreateTeamModalComponent, EditTeamModalComponent, ManagePlayersModalComponent],
   templateUrl: './teams.html',
   styleUrl: './teams.scss'
 })
@@ -106,39 +106,25 @@ export class TeamsComponent implements OnInit {
     );
   }
 
-  async createTeam() {
-    if (!this.teamForm.name.trim()) return;
-    
-    if (this.isTeamNameTaken(this.teamForm.name.trim())) {
-      alert('Team name already exists. Please choose a different name.');
-      return;
-    }
-    
+  async createTeam(teamName: string) {
     try {
       await this.teamService.createTeam({
-        name: this.teamForm.name.trim(),
+        name: teamName,
         tournamentId: this.tournamentId,
         playerIds: []
       });
       
-      this.closeModals();
       await this.loadData();
     } catch (error) {
       console.error('Error creating team:', error);
     }
   }
 
-  async updateTeam() {
-    if (!this.selectedTeam || !this.teamForm.name.trim()) return;
-    
-    if (this.isTeamNameTaken(this.teamForm.name.trim(), this.selectedTeam.id)) {
-      alert('Team name already exists. Please choose a different name.');
-      return;
-    }
+  async updateTeam(teamName: string) {
+    if (!this.selectedTeam) return;
     
     try {
-      await this.teamService.updateTeam(this.selectedTeam.id!, { name: this.teamForm.name.trim() });
-      this.closeModals();
+      await this.teamService.updateTeam(this.selectedTeam.id!, { name: teamName });
       await this.loadData();
     } catch (error) {
       console.error('Error updating team:', error);
@@ -156,12 +142,15 @@ export class TeamsComponent implements OnInit {
     }
   }
 
-  async saveTeamPlayers() {
+  async saveTeamPlayers(data: {playerIds: string[], captainId?: string}) {
     if (!this.selectedTeam) return;
     
     try {
-      await this.teamService.updateTeam(this.selectedTeam.id!, { playerIds: this.selectedPlayers });
-      this.closeModals();
+      const updateData: any = { playerIds: data.playerIds };
+      if (data.captainId) {
+        updateData.captainId = data.captainId;
+      }
+      await this.teamService.updateTeam(this.selectedTeam.id!, updateData);
       await this.loadData();
     } catch (error) {
       console.error('Error updating team players:', error);

@@ -82,146 +82,26 @@
   
 </app-shared-layout>
 
-<!-- Create Team Modal -->
-<div class="modal fade" [class.show]="showCreateModal" [style.display]="showCreateModal ? 'block' : 'none'"
-  tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Create New Team</h5>
-        <button type="button" class="btn-close" (click)="closeModals()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Team Name</label>
-          <input type="text" class="form-control" [(ngModel)]="teamForm.name"
-            [class.is-invalid]="teamForm.name.trim() && isTeamNameTaken(teamForm.name.trim())"
-            placeholder="Enter team name" maxlength="50">
-          <div *ngIf="teamForm.name.trim() && isTeamNameTaken(teamForm.name.trim())" class="invalid-feedback">
-            Team name already exists
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="createTeam()"
-          [disabled]="!teamForm.name.trim() || isTeamNameTaken(teamForm.name.trim())">
-          Create Team
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+<app-create-team-modal
+  [show]="showCreateModal"
+  [isNameTaken]="isTeamNameTaken(teamForm.name.trim())"
+  (closed)="closeModals()"
+  (created)="createTeam($event)">
+</app-create-team-modal>
 
-<!-- Edit Team Modal -->
-<div class="modal fade" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Team</h5>
-        <button type="button" class="btn-close" (click)="closeModals()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Team Name</label>
-          <input type="text" class="form-control" [(ngModel)]="teamForm.name"
-            [class.is-invalid]="teamForm.name.trim() && isTeamNameTaken(teamForm.name.trim(), selectedTeam?.id)"
-            placeholder="Enter team name" maxlength="50">
-          <div *ngIf="teamForm.name.trim() && isTeamNameTaken(teamForm.name.trim(), selectedTeam?.id)"
-            class="invalid-feedback">
-            Team name already exists
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="updateTeam()"
-          [disabled]="!teamForm.name.trim() || isTeamNameTaken(teamForm.name.trim(), selectedTeam?.id)">
-          Update Team
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+<app-edit-team-modal
+  [show]="showEditModal"
+  [team]="selectedTeam"
+  [isNameTaken]="isTeamNameTaken(teamForm.name.trim(), selectedTeam?.id)"
+  (closed)="closeModals()"
+  (updated)="updateTeam($event)">
+</app-edit-team-modal>
 
-<!-- Manage Players Modal -->
-<div class="modal fade" [class.show]="showManagePlayersModal"
-  [style.display]="showManagePlayersModal ? 'block' : 'none'" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Manage Players - {{selectedTeam?.name}}</h5>
-        <button type="button" class="btn-close" (click)="closeModals()"></button>
-      </div>
-      <div class="modal-body"
-        style="overflow-y: auto;max-height: calc(100dvh - 280px);min-height: calc(100dvh - 280px);">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="card mb-3">
-              <div class="card-body">
-                <h6 class="card-title">Available Players</h6>
-                <div class="list-group"
-                  style="overflow-y: auto;max-height: var(--half-screen-height);min-height: var(--half-screen-height);">
-                  <div *ngFor="let player of getAvailablePlayersForTeam()"
-                    class="list-group-item d-flex justify-content-between align-items-center"
-                    [class.active]="isPlayerSelected(player.id!)">
-                    <div>
-                      <strong>{{player.playerName}}</strong>
-                      <small class="text-muted d-block">{{player.playerEmail}}</small>
-                    </div>
-                    <div>
-                      <span class="badge bg-secondary me-2">{{player.gender}}</span>
-                      <input type="checkbox" class="form-check-input" [checked]="isPlayerSelected(player.id!)"
-                        (change)="togglePlayerSelection(player.id!)">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-
-            <div class="card">
-              <div class="card-body">
-                <h6 class="card-title">Selected Players ({{selectedPlayers.length}})</h6>
-
-                <div class="list-group"
-                  style="overflow-y: auto;max-height: var(--half-screen-height);min-height: var(--half-screen-height);">
-                  <div *ngFor="let playerId of selectedPlayers"
-                    class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                      <strong>{{getPlayerNameById(playerId)}}</strong>
-                      <span *ngIf="selectedTeam?.captainId === playerId"
-                        class="badge bg-warning text-dark ms-1">Captain</span>
-                    </div>
-                    <div class="btn-group btn-group-sm">
-                      <button *ngIf="selectedTeam?.captainId !== playerId" class="btn btn-outline-warning btn-sm"
-                        (click)="setCaptain(playerId)" title="Make captain">
-                        <i class="bi bi-star"></i>
-                      </button>
-                      <button class="btn btn-outline-danger btn-sm" (click)="togglePlayerSelection(playerId)"
-                        title="Remove">
-                        <i class="bi bi-x"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModals()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="saveTeamPlayers()">
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal backdrop -->
-<div *ngIf="showCreateModal || showEditModal || showManagePlayersModal" class="modal-backdrop fade show"
-  (click)="closeModals()"></div>
+<app-manage-players-modal
+  [show]="showManagePlayersModal"
+  [team]="selectedTeam"
+  [availablePlayers]="getAvailablePlayersForTeam()"
+  [selectedPlayers]="selectedPlayers"
+  (closed)="closeModals()"
+  (playersUpdated)="saveTeamPlayers($event)">
+</app-manage-players-modal>

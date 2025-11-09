@@ -2,14 +2,14 @@ import { Component, Input, OnInit, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PopoverModule } from 'ngx-bootstrap/popover';
-import { PlayerRegistrationFormComponent, SharedLayoutComponent } from '../../components';
+import { SharedLayoutComponent, AddPlayerModalComponent, BulkUploadModalComponent, EditPlayerModalComponent } from '../../components';
 import { ConfirmationModalService, LoaderService, TeamService, ValidationService } from '../../services';
 import { PlayerRegistrationService } from '../../services/player-registration.service';
 import { IPlayerRegistration, ITeam, ITournament } from '../../models';
 
 @Component({
   selector: 'players',
-  imports: [CommonModule, FormsModule, PlayerRegistrationFormComponent, PopoverModule, SharedLayoutComponent],
+  imports: [CommonModule, FormsModule, PopoverModule, SharedLayoutComponent, AddPlayerModalComponent, BulkUploadModalComponent, EditPlayerModalComponent],
   templateUrl: './players.html',
   styleUrl: './players.scss',
 })
@@ -248,24 +248,22 @@ export class PlayersComponent implements OnInit {
     this.showEditModal = true;
   }
 
-  async updatePlayer() {
-    if (!this.editingPlayer?.id) return;
+  async updatePlayer(updatedPlayer: IPlayerRegistration) {
+    if (!updatedPlayer?.id) return;
     
     const id = this.loader.show();
     try {
-      await this.playerRegistrationService.updatePlayerRegistration(this.editingPlayer.id, {
-        playerName: this.editingPlayer.playerName,
-        playerEmail: this.editingPlayer.playerEmail,
-        gender: this.editingPlayer.gender,
-        mobileNumber: this.editingPlayer.mobileNumber
+      await this.playerRegistrationService.updatePlayerRegistration(updatedPlayer.id, {
+        playerName: updatedPlayer.playerName,
+        playerEmail: updatedPlayer.playerEmail,
+        gender: updatedPlayer.gender,
+        mobileNumber: updatedPlayer.mobileNumber
       });
       
-      const index = this.registrations.findIndex(r => r.id === this.editingPlayer!.id);
+      const index = this.registrations.findIndex(r => r.id === updatedPlayer.id);
       if (index !== -1) {
-        this.registrations[index] = { ...this.editingPlayer };
+        this.registrations[index] = { ...updatedPlayer };
       }
-      
-      this.closeEditModal();
     } catch (error) {
       console.error('Error updating player:', error);
     } finally {
