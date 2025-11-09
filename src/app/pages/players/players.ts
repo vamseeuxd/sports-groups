@@ -14,6 +14,7 @@ import { IPlayerRegistration, ITeam, ITournament } from '../../models';
   styleUrl: './players.scss',
 })
 export class PlayersComponent implements OnInit {
+
   private confirmationModal = inject(ConfirmationModalService);
   private playerRegistrationService = inject(PlayerRegistrationService);
   private teamService = inject(TeamService);
@@ -33,6 +34,19 @@ export class PlayersComponent implements OnInit {
   csvData: any[] = [];
   csvErrors: string[] = [];
   uploading = false;
+
+  headerActions = [
+    {
+      label: 'Add New Player',
+      icon: 'bi bi-plus-lg',
+      handler: () => {this.showModal = true}
+    },
+    {
+      label: 'Bulk Upload CSV',
+      icon: 'bi bi-upload',
+      handler: () => {this.showBulkModal = true}
+    }
+  ];
 
   async ngOnInit() {
     const tournamentId = this.tournament()?.id;

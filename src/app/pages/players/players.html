@@ -1,82 +1,105 @@
-<app-shared-layout 
-  title="Players Registration" 
+<app-shared-layout
+  title="Players Registration"
   icon="bi-person-plus"
   [count]="registrations.length"
-  [loading]="loading" 
+  [loading]="loading"
+  [actions]="headerActions"
   loadingText="Loading registrations..."
   [showEmptyState]="!loading && registrations.length === 0"
   emptyText="No registrations found for this tournament."
-  emptyIcon="bi-inbox">
-  
+  emptyIcon="bi-inbox"
+>
   <div *ngIf="registrations.length > 0">
-      <div class="list-group">
-        @for (registration of registrations; track $index) {
-          <div class="list-group-item">
-            <div class="d-flex justify-content-between align-items-start">
-              <div class="flex-grow-1">
-                <h6 class="mb-1 d-flex align-items-center">
-                  <i class="bi bi-person-fill me-2"></i>{{ registration.playerName | titlecase }}
-                  <span class="badge ms-auto me-2" [class]="getStatusClass(registration.status)">
-                    {{ registration.status || 'pending' | titlecase }}
-                  </span>
-                  <ng-template #popTemplate>
-
-                    <ul class="list-group p-1 shadow border">
-                      @if (registration.status !== 'approved') {
-                        <li class="list-group-item list-group-item-success" (click)="contentMenu.hide();approveRegistration(registration)"><i class="bi bi-check-lg me-2"></i> Approve</li>
+    <div class="row">
+      @for (registration of registrations; track $index) {
+      <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="mb-2 shadow-sm p-2 border">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 d-flex align-items-center">
+                <i class="bi bi-person-fill me-2"></i>{{ registration.playerName | titlecase }}
+                <span class="badge ms-auto me-2" [class]="getStatusClass(registration.status)">
+                  {{ registration.status || 'pending' | titlecase }}
+                </span>
+                <ng-template #popTemplate>
+                  <ul class="list-group p-1 shadow border">
+                    @if (registration.status !== 'approved') {
+                    <li
+                      class="list-group-item list-group-item-success"
+                      (click)="contentMenu.hide(); approveRegistration(registration)"
+                    >
+                      <i class="bi bi-check-lg me-2"></i> Approve
+                    </li>
+                    } @if (registration.status !== 'rejected') {
+                    <li
+                      class="list-group-item"
+                      [class]="
+                        isPlayerInTeam(registration.id!)
+                          ? 'list-group-item-secondary text-muted'
+                          : 'list-group-item-warning'
+                      "
+                      [style.cursor]="isPlayerInTeam(registration.id!) ? 'not-allowed' : 'pointer'"
+                      (click)="contentMenu.hide(); rejectRegistration(registration)"
+                    >
+                      <i class="bi bi-x-lg me-2"></i> Reject @if (isPlayerInTeam(registration.id!))
+                      {
+                      <small class="d-block">Player is in team</small>
                       }
-                      @if (registration.status !== 'rejected') {
-                        <li class="list-group-item" 
-                            [class]="isPlayerInTeam(registration.id!) ? 'list-group-item-secondary text-muted' : 'list-group-item-warning'"
-                            [style.cursor]="isPlayerInTeam(registration.id!) ? 'not-allowed' : 'pointer'"
-                            (click)="contentMenu.hide();rejectRegistration(registration)">
-                          <i class="bi bi-x-lg me-2"></i> Reject
-                          @if (isPlayerInTeam(registration.id!)) {
-                            <small class="d-block">Player is in team</small>
-                          }
-                        </li>
+                    </li>
+                    }
+                    <li
+                      class="list-group-item"
+                      [class]="
+                        isPlayerInTeam(registration.id!)
+                          ? 'list-group-item-secondary text-muted'
+                          : 'list-group-item-danger'
+                      "
+                      [style.cursor]="isPlayerInTeam(registration.id!) ? 'not-allowed' : 'pointer'"
+                      (click)="contentMenu.hide(); deleteRegistration(registration)"
+                    >
+                      <i class="bi bi-trash me-2"></i> Delete @if (isPlayerInTeam(registration.id!))
+                      {
+                      <small class="d-block">Player is in team</small>
                       }
-                      <li class="list-group-item" 
-                          [class]="isPlayerInTeam(registration.id!) ? 'list-group-item-secondary text-muted' : 'list-group-item-danger'"
-                          [style.cursor]="isPlayerInTeam(registration.id!) ? 'not-allowed' : 'pointer'"
-                          (click)="contentMenu.hide();deleteRegistration(registration)">
-                        <i class="bi bi-trash me-2"></i> Delete
-                        @if (isPlayerInTeam(registration.id!)) {
-                          <small class="d-block">Player is in team</small>
-                        }
-                      </li>
-                      <li class="list-group-item list-group-item-info" (click)="contentMenu.hide();editPlayer(registration)"><i class="bi bi-pencil-fill me-2"></i> Edit Player</li>
-                    </ul>
-                  </ng-template>
-                  <button type="button" class="btn btn-outline-dark border-0 btn-sm"  #contentMenu="bs-popover" [popover]="popTemplate" container="body" placement="bottom" [outsideClick]="true">
-                    <i class="bi bi-three-dots-vertical"></i>
-                  </button>
-                </h6>
-                <p class="mb-1 text-muted">
-                  <i class="bi bi-envelope-at me-2"></i>{{ registration.playerEmail }}
-                </p>
-              </div>
+                    </li>
+                    <li
+                      class="list-group-item list-group-item-info"
+                      (click)="contentMenu.hide(); editPlayer(registration)"
+                    >
+                      <i class="bi bi-pencil-fill me-2"></i> Edit Player
+                    </li>
+                  </ul>
+                </ng-template>
+                <button
+                  type="button"
+                  class="btn btn-outline-dark border-0 btn-sm"
+                  #contentMenu="bs-popover"
+                  [popover]="popTemplate"
+                  container="body"
+                  placement="bottom"
+                  [outsideClick]="true"
+                >
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+              </h6>
+              <p class="mb-1 text-muted">
+                <i class="bi bi-envelope-at me-2"></i>{{ registration.playerEmail }}
+              </p>
             </div>
           </div>
-        }        
-      </div>      
-      <div class="d-grid gap-2 mt-2">
-        <button class="btn btn-primary btn-sm" (click)="showModal = true">
-          <i class="bi bi-plus-lg"></i> Add New Player
-        </button>
-        <button class="btn btn-outline-primary btn-sm" (click)="showBulkModal = true">
-          <i class="bi bi-upload"></i> Bulk Upload CSV
-        </button>
+        </div>
       </div>
+      }
+    </div>
   </div>
-  
 </app-shared-layout>
 
 <app-add-player-modal
   [show]="showModal"
   [tournament]="tournament()"
   (closed)="closeModal()"
-  (success)="onRegistrationSuccess()">
+  (success)="onRegistrationSuccess()"
+>
 </app-add-player-modal>
 
 <app-bulk-upload-modal
@@ -87,12 +110,14 @@
   (closed)="closeBulkModal()"
   (fileSelected)="onFileSelected($event)"
   (uploadRequested)="uploadPlayers()"
-  (downloadSampleRequested)="downloadSampleCSV()">
+  (downloadSampleRequested)="downloadSampleCSV()"
+>
 </app-bulk-upload-modal>
 
 <app-edit-player-modal
   [show]="showEditModal"
   [player]="editingPlayer"
   (closed)="closeEditModal()"
-  (updated)="updatePlayer($event)">
+  (updated)="updatePlayer($event)"
+>
 </app-edit-player-modal>
