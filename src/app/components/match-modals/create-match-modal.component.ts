@@ -11,7 +11,7 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
     <app-shared-modal
       [show]="show"
       title="Create New Match"
-      icon="bi-plus"
+      icon="bi-plus-lg"
       primaryText="Create"
       [primaryAction]="create"
       [primaryDisabled]="!isValid()"

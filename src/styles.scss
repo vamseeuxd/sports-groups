@@ -101,6 +101,9 @@ body {
   --bs-btn-border-color: var(--theme-primary);
   --bs-btn-hover-bg: var(--theme-primary);
   --bs-btn-hover-border-color: var(--theme-primary);
+  --bs-btn-active-color: var(--bs-btn-hover-color);
+  --bs-btn-active-bg: var(--bs-link-color);
+  --bs-btn-active-border-color: var(--bs-link-color);
 }
 
 /* Cards */

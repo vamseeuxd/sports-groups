@@ -52,7 +52,7 @@ import { PopoverModule } from 'ngx-bootstrap/popover';
           <i [class]="'bi ' + (emptyIcon || 'bi-inbox') + ' display-4'"></i>
           <p class="mt-2">{{ emptyText || 'No items found.' }}</p>
           <button *ngIf="emptyActionText" 
-                  class="btn btn-primary btn-sm mt-2" 
+                  class="btn btn-outline-primary btn-sm mt-2" 
                   (click)="emptyAction.emit()">
             <i *ngIf="emptyActionIcon" [class]="'bi ' + emptyActionIcon + ' me-2'"></i>
             {{ emptyActionText }}

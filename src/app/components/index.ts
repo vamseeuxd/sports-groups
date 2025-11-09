@@ -14,3 +14,4 @@ export * from './team-modals/unassigned-players-modal.component';
 export * from './player-modals/add-player-modal.component';
 export * from './player-modals/bulk-upload-modal.component';
 export * from './player-modals/edit-player-modal.component';
+export * from './qr-code-modal/qr-code-modal.component';

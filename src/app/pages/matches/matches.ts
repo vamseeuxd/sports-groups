@@ -43,7 +43,7 @@ export class MatchesComponent implements OnInit {
   headerActions = [
     {
       label: 'Create Match',
-      icon: 'bi-plus',
+      icon: 'bi-plus-lg',
       handler: () => this.openCreateModal()
     }
   ];

@@ -11,10 +11,11 @@ import { ITournament, SPORTS_OPTIONS } from '../../models/group.model';
 import QRCode from 'qrcode';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { CopyToClipboardDirective } from '../../directives';
+import { SharedLayoutComponent, QrCodeModalComponent } from '../../components';
 
 @Component({
   selector: 'app-manage-tournaments',
-  imports: [CommonModule, PopoverModule, CopyToClipboardDirective],
+  imports: [CommonModule, PopoverModule, CopyToClipboardDirective, SharedLayoutComponent, QrCodeModalComponent],
   templateUrl: './manage-tournaments.html',
   styleUrl: './manage-tournaments.scss',
 })
@@ -33,6 +34,20 @@ export class ManageTournaments {
   editingId: string | null = null;
   sportsOptions = SPORTS_OPTIONS;
   showQRPopover: string | null = null;
+  selectedTournament: ITournament | null = null;
+  
+  headerActions = [
+    {
+      label: 'Back to Groups',
+      icon: 'bi-arrow-left',
+      handler: () => this.goBack()
+    },
+    {
+      label: 'Create Tournament',
+      icon: 'bi-plus-lg',
+      handler: () => this.openAddModal()
+    }
+  ];
 
   constructor() {
     if (!this.groupId) {
@@ -120,39 +135,13 @@ export class ManageTournaments {
     return new Date(date);
   }
 
-  async showQRCode(tournamentId: string) {
-    if (this.showQRPopover === tournamentId) {
-      this.showQRPopover = null;
-      return;
-    }
-    
-    this.showQRPopover = tournamentId;
-    
-    setTimeout(async () => {
-      try {
-        const qrDataURL = await QRCode.toDataURL(tournamentId, { 
-          width: 200,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        });
-        const imgElement = document.getElementById(`qr-${tournamentId}`) as HTMLImageElement;
-        if (imgElement) {
-          imgElement.src = qrDataURL;
-          imgElement.style.display = 'block';
-          imgElement.onload = () => console.log('QR code loaded successfully');
-          imgElement.onerror = () => console.error('QR code failed to load');
-        }
-      } catch (error) {
-        console.error('QR generation error:', error);
-        this.confirmationModal.confirm('Error', 'Failed to generate QR code.', true);
-      }
-    }, 100);
+  showQRCode(tournament: ITournament) {
+    this.selectedTournament = tournament;
+    this.showQRPopover = tournament.id!;
   }
 
   hideQRCode() {
+    this.selectedTournament = null;
     this.showQRPopover = null;
   }
 

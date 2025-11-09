@@ -1,94 +1,135 @@
-@if (user$ | async; as user) { @if (user.email) {
 <div class="container-fluid">
-  <div class="row" (click)="hideQRCode()">
-    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
       <div class="d-flex align-items-center pt-3 pb-2">
         <button class="btn btn-outline-dark border-0 me-auto text-truncate" (click)="goBack()">
           <i class="bi bi-arrow-left"></i> Back
         </button>
-        <h4 class="text-center mx-auto text-truncate" style="max-width: 50%;">Tournaments</h4>
-        <button class="btn btn-outline-dark border-0 ms-auto text-truncate" (click)="openAddModal()">
+        <div class="text-center mx-auto" style="max-width: 50%">
+          <h5 class="mb-0 text-truncate">Tournaments</h5>
+        </div>
+        <button
+          class="btn btn-outline-dark border-0 ms-auto text-truncate"
+          style="opacity: 0; pointer-events: none"
+        >
           Add <i class="bi bi-plus-lg"></i>
         </button>
       </div>
-      <ul class="list-group mx-3">
-        @for (tournament of tournaments$ | async; track tournament.id) {
-        <li class="list-group-item list-group-item-warning mb-2 shadow-sm rounded-0 p-1">
-          <div class="position-relative px-1" (click)="$event.stopPropagation()">
-            <div class="w-100">
-              <p class="mb-0 py-1 fw-medium fs-6">
-                {{tournament.name}} <br>
-                <span class="text-warning-emphasis border-end border-warning" style="font-size: 12px;">
-                  <span class="text-secondary fw-medium text-truncate"
-                    style="cursor: pointer; text-decoration: underline;" (click)="showQRCode(tournament.id!)">Show QR
-                    Code</span>
 
-                  @if (showQRPopover === tournament.id) {
-                  <div class="position-absolute top-0 start-0 mt-5">
-                    <div class="card shadow">
-                      <div
-                        class="card-header d-flex fw-bold align-items-center justify-content-between position-relative">
-                        Tournament QR Code
-                        <button class="position-absolute btn btn-danger btn-sm top-0 end-0" (click)="hideQRCode()"><i
-                            class="bi bi-x-lg"></i></button>
-                      </div>
-                      <div class="card-body">
-                        <div class="mt-2 text-center">
-                          <small class="text-muted">Scan to register for tournament</small>
-                        </div>
-                        <img [id]="'qr-' + tournament.id" class="img-fluid"
-                          style="max-width: 180px; height: auto; display: block;" alt="Tournament QR Code" />
-
-                        <p class="alert alert-warning mt-2 py-1 text-center" role="alert">
-                          <small class="text-muted d-block" appCopyToClipboard="{{tournament.id}}"
-                            copySuccessMessage="Tournament ID copied!" style="cursor: pointer;" title="Click to copy Tournament ID">
-                            ID : {{tournament.id}}
-                            <i class="bi bi-copy ms-1"></i>
-                          </small>
-                        </p>
-                      </div>
+      <div class="d-flex align-items-center pt-0 pb-2">
+        @if (user$ | async; as user) { @if (user.email) {
+        <app-shared-layout
+          title="Tournaments"
+          icon="bi-trophy"
+          [loading]="!(tournaments$ | async)"
+          loadingText="Loading tournaments..."
+          [showEmptyState]="!(tournaments$ | async)?.length"
+          emptyText="No tournaments found. Create your first tournament!"
+          emptyIcon="bi-trophy"
+          emptyActionText="Create Tournament"
+          emptyActionIcon="bi-plus-lg"
+          [actions]="headerActions"
+          class="w-100"
+          (emptyAction)="openAddModal()"
+        >
+          <div *ngIf="tournaments$ | async as tournaments" class="row g-3" (click)="hideQRCode()">
+            @for (tournament of tournaments; track tournament.id) {
+            <div class="col-md-6 col-lg-4 col-xl-3">
+              <div class="card h-100" (click)="$event.stopPropagation()">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0 text-truncate">{{ tournament.name }}</h6>
+                  <ng-template #popTemplate>
+                    <ul class="list-group p-1 shadow border">
+                      <li
+                        class="list-group-item"
+                        role="button"
+                        (click)="contentMenu.hide(); configureTournament(tournament.id!)"
+                      >
+                        <i class="bi bi-gear me-2"></i> Plan Tournament
+                      </li>
+                      <li
+                        class="list-group-item"
+                        role="button"
+                        (click)="contentMenu.hide(); showQRCode(tournament)"
+                      >
+                        <i class="bi bi-qr-code me-2"></i> Show QR Code
+                      </li>
+                      <li
+                        class="list-group-item"
+                        role="button"
+                        (click)="contentMenu.hide(); openEditModal(tournament)"
+                      >
+                        <i class="bi bi-pencil-fill me-2"></i> Edit Tournament
+                      </li>
+                      <li
+                        class="list-group-item"
+                        role="button"
+                        (click)="contentMenu.hide(); delete(tournament)"
+                      >
+                        <i class="bi bi-trash me-2"></i> Delete Tournament
+                      </li>
+                    </ul>
+                  </ng-template>
+                  <button
+                    type="button"
+                    class="btn btn-outline-dark border-0 btn-sm"
+                    #contentMenu="bs-popover"
+                    [popover]="popTemplate"
+                    container="body"
+                    placement="bottom"
+                    [outsideClick]="true"
+                  >
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-controller text-dark me-2" style="font-size: 1.5rem"></i>
+                      <span class="badge bg-warning text-dark fw-normal">{{
+                        tournament.sport | titlecase
+                      }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <i
+                        class="bi bi-calendar-event text-success me-2"
+                        style="font-size: 1.5rem"
+                      ></i>
+                      <span>{{
+                        formatDateForDisplay(tournament.startDate) | date : 'MMM dd, yyyy'
+                      }}</span>
                     </div>
                   </div>
-                  }
-                </span>
-              </p>
-
-              <div class="mt-2 row text-center">
-                <span class="col text-warning-emphasis border-end border-warning">{{tournament.sport}}</span>
-                <span class="col text-warning-emphasis">{{formatDateForDisplay(tournament.startDate) | date}}</span>
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-hash text-info me-2" style="font-size: 1.5rem"></i>
+                    <small
+                      class="font-monospace text-muted text-truncate"
+                      appCopyToClipboard="{{ tournament.id }}"
+                      copySuccessMessage="Tournament ID copied!"
+                      style="cursor: pointer"
+                      title="Click to copy Tournament ID"
+                    >
+                      {{ tournament.id }}
+                      <i class="bi bi-copy ms-1"></i>
+                    </small>
+                  </div>
+                </div>
               </div>
-
-              <ng-template #popTemplate>
-
-                <ul class="list-group p-1 shadow border">
-                  <li class="list-group-item" role="button"
-                    (click)="contentMenu.hide();configureTournament(tournament.id!)"><i class="bi bi-gear me-2"></i>
-                    Plan Tournament</li>
-                  <li class="list-group-item" role="button" (click)="contentMenu.hide();openEditModal(tournament)"><i
-                      class="bi bi-pencil-fill me-2"></i> Edit Tournament</li>
-                  <li class="list-group-item" role="button" (click)="contentMenu.hide();delete(tournament)"><i
-                      class="bi bi-trash me-2"></i> Delete Tournament</li>
-                </ul>
-              </ng-template>
-              <button type="button" class="btn btn-outline-dark border-0 btn-sm position-absolute top-0 end-0"
-                #contentMenu="bs-popover" [popover]="popTemplate" container="body" placement="bottom"
-                [outsideClick]="true">
-                <i class="bi bi-three-dots-vertical"></i>
-              </button>
-
-              <!-- <div class="mt-2 row">
-                    <div class="btn-group" role="group">
-                      <button type="button" class="btn btn-sm btn-primary" (click)="configureTournament(tournament.id!)" title="Plan Tournament"> <i class="bi bi-gear"></i> </button>
-                      <button type="button" class="btn btn-sm btn-secondary" (click)="openEditModal(tournament)"> <i class="bi bi-pencil"></i> </button>
-                      <button type="button" class="btn btn-sm btn-danger" (click)="delete(tournament)"> <i class="bi bi-trash3-fill"></i> </button>
-                    </div>
-                  </div>  -->
             </div>
+            }
           </div>
-        </li>
-        }
-      </ul>
+        </app-shared-layout>
+
+        <app-qr-code-modal
+          [show]="!!selectedTournament"
+          [tournamentId]="selectedTournament?.id || ''"
+          [tournament]="selectedTournament"
+          (closed)="hideQRCode()"
+        >
+        </app-qr-code-modal>
+
+        } }
+      </div>
     </div>
   </div>
 </div>
-} }

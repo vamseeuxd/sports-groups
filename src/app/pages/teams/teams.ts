@@ -47,7 +47,7 @@ export class TeamsComponent implements OnInit {
     },
     {
       label: 'Create Team',
-      icon: 'bi-plus',
+      icon: 'bi-plus-lg',
       handler: () => this.openCreateModal()
     }
   ];
