@@ -2,14 +2,14 @@ import { Component, Input, OnInit, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PopoverModule } from 'ngx-bootstrap/popover';
-import { PlayerRegistrationFormComponent } from '../../components';
+import { PlayerRegistrationFormComponent, SharedLayoutComponent } from '../../components';
 import { ConfirmationModalService, LoaderService, TeamService, ValidationService } from '../../services';
 import { PlayerRegistrationService } from '../../services/player-registration.service';
 import { IPlayerRegistration, ITeam, ITournament } from '../../models';
 
 @Component({
   selector: 'players',
-  imports: [CommonModule, FormsModule, PlayerRegistrationFormComponent, PopoverModule],
+  imports: [CommonModule, FormsModule, PlayerRegistrationFormComponent, PopoverModule, SharedLayoutComponent],
   templateUrl: './players.html',
   styleUrl: './players.scss',
 })

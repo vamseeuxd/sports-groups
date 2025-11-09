@@ -1,38 +1,22 @@
-<div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0"><i class="bi bi-people"></i> Tournament Teams</h5>
-
-    <ng-template #popTemplate>
-
-      <ul class="list-group p-1 shadow border">
-        <li class="list-group-item" role="button" (click)="contentMenu.hide();loadData();"><i
-            class="bi bi-arrow-clockwise me-2"></i>Refresh Tournament</li>
-        <li class="list-group-item" role="button" (click)="contentMenu.hide();openCreateModal();"><i
-            class="bi bi-plus me-2"></i> Create Team</li>
-      </ul>
-    </ng-template>
-    <button type="button" class="btn btn-outline-dark border-0 btn-sm position-absolute top-0 end-0 m-1"
-      #contentMenu="bs-popover" [popover]="popTemplate" container="body" placement="bottom" [outsideClick]="true">
-      <i class="bi bi-three-dots-vertical"></i>
-    </button>
-  </div>
-
-  <div class="card-body" style="max-height: calc(100dvh - 200px);overflow: auto;min-height: calc(100dvh - 200px);">
-    <div *ngIf="loading" class="text-center py-3">
-      <div class="spinner-border" role="status"></div>
+<app-shared-layout 
+  title="Tournament Teams" 
+  icon="bi-people"
+  [loading]="loading" 
+  loadingText="Loading teams..."
+  [showEmptyState]="!loading && teams.length === 0"
+  emptyText="No teams created yet. Create your first team to get started."
+  emptyIcon="bi-people"
+  emptyActionText="Create Team"
+  emptyActionIcon="bi-plus"
+  [actions]="headerActions"
+  (emptyAction)="openCreateModal()">
+  
+  <div *ngIf="!loading">
+    <!-- Debug Info -->
+    <div class="alert alert-warning mb-3 py-1 text-center" role="alert">
+      <small>Total Available Players: {{availablePlayers.length}} | Unassigned:
+        {{getUnassignedPlayers().length}}</small>
     </div>
-
-    <div *ngIf="!loading">
-      <!-- Debug Info -->
-      <div class="alert alert-warning mb-3 py-1 text-center" role="alert">
-        <small>Total Available Players: {{availablePlayers.length}} | Unassigned:
-          {{getUnassignedPlayers().length}}</small>
-      </div>
-
-      <div *ngIf="teams.length === 0" class="text-center text-muted py-4">
-        <i class="bi bi-people display-4"></i>
-        <p class="mt-2">No teams created yet. Create your first team to get started.</p>
-      </div>
 
       <div class="row" *ngIf="teams.length > 0">
         <div class="col-md-6 mb-3" *ngFor="let team of teams">
@@ -95,8 +79,8 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
+  
+</app-shared-layout>
 
 <!-- Create Team Modal -->
 <div class="modal fade" [class.show]="showCreateModal" [style.display]="showCreateModal ? 'block' : 'none'"

@@ -7,10 +7,11 @@ import { BsModalRef, BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 
 import { ConfirmationModalService, MatchService, TeamService } from '../../services';
 import { IKnockoutMatch, ITeam } from '../../models';
+import { SharedLayoutComponent } from '../../components';
 
 @Component({
   selector: 'matches',
-  imports: [CommonModule, FormsModule, PopoverModule, ModalModule],
+  imports: [CommonModule, FormsModule, PopoverModule, ModalModule, SharedLayoutComponent],
   templateUrl: './matches.html',
   styleUrl: './matches.scss'
 })
@@ -38,6 +39,14 @@ export class MatchesComponent implements OnInit {
   matchForm = { round: 1, position: 1, scheduledDate: '', winnerId: '', status: 'pending' };
   selectedMatch: IKnockoutMatch | null = null;
   selectedTeams: string[] = [];
+  
+  headerActions = [
+    {
+      label: 'Create Match',
+      icon: 'bi-plus',
+      handler: () => this.openCreateModal(null)
+    }
+  ];
 
   async ngOnInit() {
     await this.loadData();

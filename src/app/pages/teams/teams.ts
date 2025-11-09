@@ -7,10 +7,11 @@ import { CopyToClipboardDirective } from '../../directives';
 import { TeamService } from '../../services';
 import { PlayerRegistrationService } from '../../services/player-registration.service';
 import { IPlayerRegistration, ITeam, ITeamPlayer } from '../../models';
+import { SharedLayoutComponent } from '../../components';
 
 @Component({
   selector: 'teams',
-  imports: [CommonModule, FormsModule, CopyToClipboardDirective, PopoverModule],
+  imports: [CommonModule, FormsModule, CopyToClipboardDirective, PopoverModule, SharedLayoutComponent],
   templateUrl: './teams.html',
   styleUrl: './teams.scss'
 })
@@ -36,6 +37,19 @@ export class TeamsComponent implements OnInit {
   teamForm = { name: '' };
   selectedTeam: ITeam | null = null;
   selectedPlayers: string[] = [];
+  
+  headerActions = [
+    {
+      label: 'Refresh Tournament',
+      icon: 'bi-arrow-clockwise',
+      handler: () => this.loadData()
+    },
+    {
+      label: 'Create Team',
+      icon: 'bi-plus',
+      handler: () => this.openCreateModal()
+    }
+  ];
 
   async ngOnInit() {
     await this.loadData();
