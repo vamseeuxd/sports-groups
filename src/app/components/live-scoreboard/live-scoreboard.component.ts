@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LiveScoreService, ILiveScore } from '../../services/live-score.service';
 import { UserService } from '../../services/user.service';
-import { IKnockoutMatch } from '../../models';
+import { IKnockoutMatch, ITournament } from '../../models';
 import { Subscription, firstValueFrom } from 'rxjs';
+import { CricketScoreboardComponent } from '../cricket-scoreboard/cricket-scoreboard.component';
 
 @Component({
   selector: 'app-live-scoreboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CricketScoreboardComponent],
   template: `
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -22,6 +23,15 @@ import { Subscription, firstValueFrom } from 'rxjs';
       </div>
       
       <div class="card-body">
+        <!-- Sport-Specific Scoreboard -->
+        <app-cricket-scoreboard 
+          *ngIf="tournament.sport === 'Cricket'"
+          [match]="match"
+          [canUpdateScore]="canUpdateScore">
+        </app-cricket-scoreboard>
+        
+        <!-- Generic Scoreboard for other sports -->
+        <div *ngIf="tournament.sport !== 'Cricket'">
         <!-- Teams Display -->
         <div class="row mb-4">
           <div class="col-5 text-center">
@@ -109,6 +119,7 @@ import { Subscription, firstValueFrom } from 'rxjs';
             by {{ liveScore?.updatedBy }}
           </small>
         </div>
+        </div>
       </div>
     </div>
   `,
@@ -138,6 +149,7 @@ import { Subscription, firstValueFrom } from 'rxjs';
 })
 export class LiveScoreboardComponent implements OnInit, OnDestroy {
   @Input() match!: IKnockoutMatch;
+  @Input() tournament!: ITournament;
   @Input() canUpdateScore = false;
 
   private liveScoreService = inject(LiveScoreService);

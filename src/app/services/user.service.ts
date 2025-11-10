@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, query, where } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, query, where, doc, getDoc } from '@angular/fire/firestore';
 import { Auth, user } from '@angular/fire/auth';
 import { Observable, combineLatest } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -35,5 +35,20 @@ export class UserService {
           });
       })
     );
+  }
+  
+  async getUserById(userId: string): Promise<IUser | null> {
+    try {
+      const userDoc = doc(this.firestore, APP_CONSTANTS.COLLECTIONS.USERS, userId);
+      const userSnap = await getDoc(userDoc);
+      
+      if (userSnap.exists()) {
+        return { id: userSnap.id, ...userSnap.data() } as IUser;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return null;
+    }
   }
 }

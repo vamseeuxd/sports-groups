@@ -2,9 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatchService } from '../../services/match.service';
+import { TournamentService } from '../../services/tournament.service';
 import { UserService } from '../../services/user.service';
 import { LiveScoreboardComponent } from '../../components/live-scoreboard/live-scoreboard.component';
-import { IKnockoutMatch } from '../../models';
+import { IKnockoutMatch, ITournament } from '../../models';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -18,9 +19,11 @@ export class LiveScoreComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private matchService = inject(MatchService);
+  private tournamentService = inject(TournamentService);
   private userService = inject(UserService);
 
   match: IKnockoutMatch | null = null;
+  tournament: ITournament | null = null;
   canUpdateScore = false;
   loading = true;
 
@@ -33,6 +36,9 @@ export class LiveScoreComponent implements OnInit {
 
     try {
       this.match = await firstValueFrom(this.matchService.getMatchById(matchId));
+      if (this.match?.tournamentId) {
+        this.tournament = await firstValueFrom(this.tournamentService.getTournamentById(this.match.tournamentId));
+      }
       const user = await firstValueFrom(this.userService.user$);
       this.canUpdateScore = true; // For now, allow all authenticated users
     } catch (error) {

@@ -74,6 +74,21 @@ export class PlayerRegistrationService {
       lastUpdatedOn: new Date()
     });
   }
+    
+  async getRegistoredPlayerById(playerId: string): Promise<IPlayerRegistration | null> {
+    try {
+      const registoredPlayerDoc = doc(this.firestore, APP_CONSTANTS.COLLECTIONS.PLAYER_REGISTRATIONS, playerId);
+      const registoredPlayerSnap = await getDoc(registoredPlayerDoc);
+      
+      if (registoredPlayerSnap.exists()) {
+        return { id: registoredPlayerSnap.id, ...registoredPlayerSnap.data() } as IPlayerRegistration;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return null;
+    }
+  }
 
   async bulkRegisterPlayers(tournamentId: string, players: any[]): Promise<{ success: number; failed: number; errors: string[] }> {
     const results = { success: 0, failed: 0, errors: [] as string[] };

@@ -16,5 +16,6 @@ export * from './player-modals/bulk-upload-modal.component';
 export * from './player-modals/edit-player-modal.component';
 export * from './qr-code-modal/qr-code-modal.component';
 export * from './live-scoreboard/live-scoreboard.component';
+export * from './cricket-scoreboard/cricket-scoreboard.component';
 export * from './base-modal.component';
 export * from './base-data.component';

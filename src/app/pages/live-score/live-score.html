@@ -21,9 +21,10 @@
       </div>
 
       <!-- Live Scoreboard -->
-      <div *ngIf="!loading && match">
+      <div *ngIf="!loading && match && tournament">
         <app-live-scoreboard 
-          [match]="match" 
+          [match]="match"
+          [tournament]="tournament" 
           [canUpdateScore]="canUpdateScore">
         </app-live-scoreboard>
       </div>
