@@ -366,6 +366,82 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
         </div>
       </div>
     </app-shared-modal>
+
+    <!-- Voice Selection Modal -->
+    <app-shared-modal 
+      *ngIf="showVoiceSelectionModal"
+      title="Voice Settings"
+      [show]="showVoiceSelectionModal"
+      [showFooter]="false"
+      (closed)="closeVoiceSelectionModal()">
+      <div class="modal-body-content">
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="speechToggle" [(ngModel)]="speechEnabled" (change)="toggleSpeech()">
+            <label class="form-check-label" for="speechToggle">
+              <i class="bi bi-volume-up me-2"></i>Enable Commentary
+            </label>
+          </div>
+        </div>
+        
+        <div *ngIf="speechEnabled" class="mb-3">
+          <h6><i class="bi bi-translate me-2"></i>Select Language</h6>
+          <div class="language-selection">
+            <div class="row g-2">
+              <div class="col-6">
+                <button class="btn w-100" 
+                        [class]="selectedLanguage === 'en' ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="selectLanguage('en')">
+                  English
+                </button>
+              </div>
+              <div class="col-6">
+                <button class="btn w-100" 
+                        [class]="selectedLanguage === 'hi' ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="selectLanguage('hi')">
+                  हिंदी
+                </button>
+              </div>
+              <div class="col-6">
+                <button class="btn w-100" 
+                        [class]="selectedLanguage === 'te' ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="selectLanguage('te')">
+                  తెలుగు
+                </button>
+              </div>
+              <div class="col-6">
+                <button class="btn w-100" 
+                        [class]="selectedLanguage === 'ta' ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="selectLanguage('ta')">
+                  தமிழ்
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="speechEnabled" class="voice-selection">
+          <h6><i class="bi bi-mic me-2"></i>Select Voice</h6>
+          <div class="voice-list">
+            <div *ngFor="let voice of getFilteredVoices()" 
+                 class="voice-item" 
+                 [class.selected]="selectedVoice === voice"
+                 (click)="selectVoice(voice)">
+              <div class="voice-info">
+                <div class="voice-name">{{ voice.name }}</div>
+                <small class="voice-lang">{{ voice.lang }} - {{ voice.localService ? 'Local' : 'Remote' }}</small>
+              </div>
+              <button class="btn btn-sm btn-outline-primary" (click)="testVoice(voice); $event.stopPropagation()">
+                <i class="bi bi-play"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeVoiceSelectionModal()">Close</button>
+      </div>
+    </app-shared-modal>
   `,
   styles: [`
     .score-display-section {
@@ -555,6 +631,56 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
     .badge {
       font-size: 0.75rem;
     }
+    
+    .voice-selection {
+      margin-top: 1rem;
+    }
+    
+    .voice-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid var(--theme-accent);
+      border-radius: 6px;
+    }
+    
+    .voice-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--theme-lighter);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .voice-item:hover {
+      background-color: var(--theme-lighter);
+    }
+    
+    .voice-item.selected {
+      background-color: var(--theme-primary);
+      color: white;
+    }
+    
+    .voice-item:last-child {
+      border-bottom: none;
+    }
+    
+    .voice-info {
+      flex: 1;
+    }
+    
+    .voice-name {
+      font-weight: 500;
+    }
+    
+    .voice-lang {
+      color: var(--theme-muted);
+    }
+    
+    .voice-item.selected .voice-lang {
+      color: rgba(255, 255, 255, 0.8);
+    }
   `]
 })
 export class CricketScoreboardComponent implements OnInit, OnDestroy {
@@ -584,6 +710,58 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
   actionHistory: any[] = [];
   showPlayerSelectionModal = false;
   showMatchStatusModal = false;
+  showVoiceSelectionModal = false;
+  speechEnabled = true;
+  selectedVoice: SpeechSynthesisVoice | null = null;
+  availableVoices: SpeechSynthesisVoice[] = [];
+  selectedLanguage = 'en';
+  
+  private commentary = {
+    en: {
+      dot: ['Brilliant bowling! Absolutely unplayable!', 'Oh my word! What a delivery!', 'Beaten all ends up! Magnificent bowling!'],
+      single: ['Clever batting! Quick thinking between the wickets!', 'Excellent running! They make it look so easy!'],
+      two: 'Finds the gap, they\'ll come back for two!',
+      three: 'Places it well, running hard for three!',
+      boundary: ['MAGNIFICENT! Absolutely stunning shot!', 'GLORIOUS! What a way to find the fence!', 'SPECTACULAR! The crowd erupts in joy!'],
+      six: ['UNBELIEVABLE! That ball has been murdered!', 'PHENOMENAL! Into orbit it goes!', 'EXTRAORDINARY! The crowd goes absolutely wild!'],
+      wicket: 'Wicket! {outBatsman} is out! Great bowling by {bowler}. {newBatsman} comes to the crease.',
+      endOver: 'End of over {overs}. {team} {score} after {overs} overs. {bowler} to bowl the next over',
+      commentaryEnabled: 'Commentary enabled'
+    },
+    hi: {
+      dot: ['शानदार गेंदबाजी! बिल्कुल अजेय!', 'अरे वाह! क्या गेंद है!', 'बल्लेबाज का कोई जवाब नहीं!'],
+      single: ['चतुर बल्लेबाजी! विकेटों के बीच तेज दौड़!', 'उत्कृष्ट दौड़! वे इसे इतना आसान बनाते हैं!'],
+      two: 'गैप मिल गया, दो रन के लिए वापस आएंगे!',
+      three: 'अच्छी जगह रखा, तीन के लिए कड़ी मेहनत!',
+      boundary: ['चौका! शानदार! बिल्कुल शानदार शॉट!', 'चौका! वाह! बाउंड्री तक पहुंचने का क्या तरीका!', 'चौका! दर्शक खुशी से चिल्ला रहे हैं!'],
+      six: ['छक्का! अविश्वसनीय! गेंद का कत्ल हो गया!', 'छक्का! अद्भुत! आसमान में चली गई!', 'छक्का! असाधारण! दर्शक पागल हो गए!'],
+      wicket: 'विकेट! {outBatsman} आउट! {bowler} की शानदार गेंदबाजी। {newBatsman} क्रीज़ पर आया।',
+      endOver: 'ओवर {overs} समाप्त। {team} {score} {overs} ओवर के बाद। {bowler} अगला ओवर करेगा',
+      commentaryEnabled: 'कमेंट्री चालू'
+    },
+    te: {
+      dot: ['అద్భుతమైన బౌలింగ్! పూర్తిగా అజేయం!', 'ఓ మై వర్డ్! ఎంత బంతి!', 'బ్యాట్స్‌మన్‌కు సమాధానం లేదు!'],
+      single: ['తెలివైన బ్యాటింగ్! వికెట్ల మధ్య వేగంగా పరుగులు!', 'అద్భుతమైన పరుగులు! వారు దీన్ని చాలా సులభంగా చేస్తారు!'],
+      two: 'గ్యాప్ దొరికింది, రెండు పరుగుల కోసం తిరిగి వస్తారు!',
+      three: 'బాగా ఉంచారు, మూడు కోసం కష్టపడుతున్నారు!',
+      boundary: ['ఫోర్! అద్భుతం! పూర్తిగా అద్భుతమైన షాట్!', 'ఫోర్! అందమైనది! బౌండరీకి చేరుకునే మార్గం!', 'ఫోర్! ప్రేక్షకులు ఆనందంతో అరుస్తున్నారు!'],
+      six: ['సిక్స్! నమ్మలేనిది! బంతిని చంపేశారు!', 'సిక్స్! అద్భుతం! ఆకాశంలోకి వెళ్లిపోయింది!', 'సిక్స్! అసాధారణం! ప్రేక్షకులు పిచ్చిగా మారారు!'],
+      wicket: 'వికెట్! {outBatsman} అవుట్! {bowler} అద్భుతమైన బౌలింగ్. {newBatsman} క్రీజ్‌కు వచ్చారు.',
+      endOver: 'ఓవర్ {overs} ముగిసింది. {team} {score} {overs} ఓవర్ల తర్వాత. {bowler} తదుపరి ఓవర్ వేస్తారు',
+      commentaryEnabled: 'వ్యాఖ్యానం ప్రారంభించబడింది'
+    },
+    ta: {
+      dot: ['அற்புதமான பந்துவீச்சு! முற்றிலும் வெல்ல முடியாதது!', 'ஓ மை வேர்ட்! என்ன பந்து!', 'பேட்ஸ்மேனுக்கு பதில் இல்லை!'],
+      single: ['புத்திசாலித்தனமான பேட்டிங்! விக்கெட்டுகளுக்கு இடையே வேகமான ஓட்டம்!', 'சிறந்த ஓட்டம்! அவர்கள் இதை மிக எளிதாக செய்கிறார்கள்!'],
+      two: 'இடைவெளி கிடைத்தது, இரண்டுக்கு திரும்பி வருவார்கள்!',
+      three: 'நன்றாக வைத்தார், மூன்றுக்கு கடினமாக ஓடுகிறார்கள்!',
+      boundary: ['அற்புதம்! முற்றிலும் அற்புதமான ஷாட்!', 'அழகானது! எல்லைக்கு செல்லும் வழி!', 'பார்வையாளர்கள் மகிழ்ச்சியில் கூச்சலிடுகிறார்கள்!'],
+      six: ['நம்ப முடியாதது! பந்தை கொன்றுவிட்டார்கள்!', 'அற்புதம்! வானத்தில் சென்றுவிட்டது!', 'அசாதாரணம்! பார்வையாளர்கள் பைத்தியமாகிவிட்டார்கள்!'],
+      wicket: 'விக்கெட்! {outBatsman} அவுட்! {bowler} அற்புதமான பந்துவீச்சு. {newBatsman} க்ரீஸுக்கு வந்தார்.',
+      endOver: 'ஓவர் {overs} முடிந்தது. {team} {score} {overs} ஓவர்களுக்கு பிறகு. {bowler} அடுத்த ஓவர் வீசுவார்',
+      commentaryEnabled: 'வர்ணனை இயக்கப்பட்டது'
+    }
+  };
   
   getActionMenuItems() {
     const items = [];
@@ -608,18 +786,37 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
           handler: () => this.openPlayerSelectionModal()
         });
       }
+      
+      // Voice settings
+      if ('speechSynthesis' in window) {
+        items.push({
+          label: 'Voice Settings',
+          icon: 'bi-mic',
+          handler: () => this.openVoiceSelectionModal()
+        });
+      }
     }
     
     return items;
   }
   
   private speak(text: string) {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8;
-      utterance.pitch = 1;
-      speechSynthesis.speak(utterance);
+    if (!this.speechEnabled || !('speechSynthesis' in window)) {
+      console.log('Speech disabled or not supported');
+      return;
     }
+    
+    console.log('Speaking:', text);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.8;
+    utterance.pitch = 1;
+    utterance.volume = 0.8;
+    
+    if (this.selectedVoice) {
+      utterance.voice = this.selectedVoice;
+    }
+    
+    speechSynthesis.speak(utterance);
   }
 
   ngOnInit() {
@@ -632,6 +829,78 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
       }
     );
     this.loadPlayerNames();
+    this.loadVoices();
+  }
+  
+  private loadVoices() {
+    if ('speechSynthesis' in window) {
+      const updateVoices = () => {
+        this.availableVoices = speechSynthesis.getVoices();
+        if (this.availableVoices.length > 0 && !this.selectedVoice) {
+          this.selectedVoice = this.availableVoices.find(voice => voice.lang.startsWith('en')) || this.availableVoices[0];
+        }
+      };
+      
+      updateVoices();
+      speechSynthesis.addEventListener('voiceschanged', updateVoices);
+    }
+  }
+  
+  openVoiceSelectionModal() {
+    this.showVoiceSelectionModal = true;
+  }
+  
+  closeVoiceSelectionModal() {
+    this.showVoiceSelectionModal = false;
+  }
+  
+  selectVoice(voice: SpeechSynthesisVoice) {
+    this.selectedVoice = voice;
+  }
+  
+  testVoice(voice: SpeechSynthesisVoice) {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance('This is a test of the selected voice');
+      utterance.voice = voice;
+      utterance.rate = 0.8;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      speechSynthesis.speak(utterance);
+    }
+  }
+  
+  toggleSpeech() {
+    this.speechEnabled = !this.speechEnabled;
+    if (this.speechEnabled) {
+      const lang = this.commentary[this.selectedLanguage as 'en' | 'hi' | 'te' | 'ta'];
+      this.speak(lang.commentaryEnabled);
+    } else {
+      speechSynthesis.cancel();
+    }
+  }
+  
+  selectLanguage(langCode: string) {
+    this.selectedLanguage = langCode;
+    // Update voice to match language if available
+    const matchingVoice = this.availableVoices.find(voice => voice.lang.startsWith(langCode));
+    if (matchingVoice) {
+      this.selectedVoice = matchingVoice;
+    }
+  }
+  
+  getFilteredVoices(): SpeechSynthesisVoice[] {
+    const filtered = this.availableVoices.filter(voice => voice.lang.startsWith(this.selectedLanguage));
+    if (filtered.length > 0) return filtered;
+    
+    // For Telugu and Tamil, prefer Google voices
+    if (this.selectedLanguage === 'te' || this.selectedLanguage === 'ta') {
+      const googleVoices = this.availableVoices.filter(voice => 
+        voice.name.toLowerCase().includes('google'));
+      if (googleVoices.length > 0) return googleVoices;
+    }
+    
+    return this.availableVoices.filter(voice => voice.lang.startsWith('en'));
   }
   
   private async loadPlayerNames() {
@@ -708,19 +977,25 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
     const batsmanName = this.getPlayerName(cricketData.currentBatsmen[0]);
     const bowlerName = this.getPlayerName(cricketData.currentBowler);
     const teamName = cricketData.currentInning === 1 ? this.match.team1?.name : this.match.team2?.name;
-    const score = `${currentInnings.runs} for ${currentInnings.wickets}`;
-    const overs = this.getCurrentOverDisplay();
-    const dotComments = ['Brilliant bowling! Absolutely unplayable!', 'Oh my word! What a delivery!', 'Beaten all ends up! Magnificent bowling!', 'The batsman had no answer to that one!', 'Superb line and length! The crowd gasps!'];
-    const singleComments = ['Clever batting! Quick thinking between the wickets!', 'Excellent running! They make it look so easy!', 'Smart cricket! Rotating the strike beautifully!', 'Great awareness! Keeping the scoreboard ticking!'];
-    const boundaryComments = ['MAGNIFICENT! Absolutely stunning shot!', 'GLORIOUS! What a way to find the fence!', 'SPECTACULAR! The crowd erupts in joy!', 'BREATHTAKING! Pure class from the batsman!', 'INCREDIBLE! That shot will be replayed for years!'];
-    const sixComments = ['UNBELIEVABLE! That ball has been murdered!', 'PHENOMENAL! Into orbit it goes!', 'EXTRAORDINARY! The crowd goes absolutely wild!', 'SENSATIONAL! What power! What timing!', 'MONSTROUS! That ball may never come down!'];
+    const lang = this.commentary[this.selectedLanguage as 'en' | 'hi' | 'te' | 'ta'];
     
-    if (runs === 0) this.speak(`${bowlerName} to ${batsmanName}... ${dotComments[Math.floor(Math.random() * dotComments.length)]}. ${teamName} ${score} after ${overs} overs`);
-    else if (runs === 1) this.speak(`${batsmanName} ${singleComments[Math.floor(Math.random() * singleComments.length)]}. ${teamName} now ${score} after ${overs} overs`);
-    else if (runs === 2) this.speak(`${batsmanName} finds the gap, they'll come back for two. ${teamName} ${score} after ${overs} overs`);
-    else if (runs === 3) this.speak(`${batsmanName} places it well, running hard for three. ${teamName} ${score} after ${overs} overs`);
-    else if (runs === 4) this.speak(`FOUR! ${boundaryComments[Math.floor(Math.random() * boundaryComments.length)]} ${batsmanName} finds the boundary off ${bowlerName}. ${teamName} ${score} after ${overs} overs`);
-    else if (runs === 6) this.speak(`SIX! ${sixComments[Math.floor(Math.random() * sixComments.length)]} ${batsmanName} sends it sailing over the ropes! ${teamName} ${score} after ${overs} overs`);
+    if (runs === 0) {
+      const comment = lang.dot[Math.floor(Math.random() * lang.dot.length)];
+      this.speak(comment);
+    } else if (runs === 1) {
+      const comment = lang.single[Math.floor(Math.random() * lang.single.length)];
+      this.speak(comment);
+    } else if (runs === 2) {
+      this.speak(lang.two);
+    } else if (runs === 3) {
+      this.speak(lang.three);
+    } else if (runs === 4) {
+      const comment = lang.boundary[Math.floor(Math.random() * lang.boundary.length)];
+      this.speak(comment);
+    } else if (runs === 6) {
+      const comment = lang.six[Math.floor(Math.random() * lang.six.length)];
+      this.speak(comment);
+    }
   }
 
   async addExtra(type: 'wides' | 'noBalls' | 'byes' | 'legByes') {
@@ -764,13 +1039,40 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
     const teamName = cricketData.currentInning === 1 ? this.match.team1?.name : this.match.team2?.name;
     const score = `${currentInnings.runs} for ${currentInnings.wickets}`;
     const overs = this.getCurrentOverDisplay();
-    const wideComments = ['Wayward delivery!', 'Loses his line!', 'Pressure showing!'];
-    const noBallComments = ['Overstepped!', 'Front foot fault!', 'Costly mistake!'];
     
-    if (type === 'wides') this.speak(`Wide! ${wideComments[Math.floor(Math.random() * wideComments.length)]} ${bowlerName} strays down the leg side. ${teamName} ${score} after ${overs} overs`);
-    else if (type === 'noBalls') this.speak(`No ball! ${noBallComments[Math.floor(Math.random() * noBallComments.length)]} ${bowlerName} will have to bowl that again, and it's a free hit! ${teamName} ${score} after ${overs} overs`);
-    else if (type === 'byes') this.speak(`Bye! Keeper couldn't collect it cleanly, batsmen scamper through for the extra. ${teamName} ${score} after ${overs} overs`);
-    else if (type === 'legByes') this.speak(`Leg bye! Off the pads, appeal for LBW but going down leg, they'll take the run. ${teamName} ${score} after ${overs} overs`);
+    const extraCommentary = {
+      en: {
+        wide: `Wide! Wayward delivery! ${bowlerName} strays down the leg side. ${teamName} ${score} after ${overs} overs`,
+        noBall: `No ball! Overstepped! ${bowlerName} will have to bowl that again, and it's a free hit! ${teamName} ${score} after ${overs} overs`,
+        bye: `Bye! Keeper couldn't collect it cleanly, batsmen scamper through for the extra. ${teamName} ${score} after ${overs} overs`,
+        legBye: `Leg bye! Off the pads, appeal for LBW but going down leg, they'll take the run. ${teamName} ${score} after ${overs} overs`
+      },
+      hi: {
+        wide: `वाइड! गलत दिशा में गेंद! ${bowlerName} लाइन से भटक गया। ${teamName} ${score} ${overs} ओवर के बाद`,
+        noBall: `नो बॉल! लाइन पार कर गया! ${bowlerName} को दोबारा डालना होगा, और यह फ्री हिट है! ${teamName} ${score} ${overs} ओवर के बाद`,
+        bye: `बाई! विकेटकीपर साफ नहीं पकड़ सका, बल्लेबाज अतिरिक्त रन के लिए दौड़े। ${teamName} ${score} ${overs} ओवर के बाद`,
+        legBye: `लेग बाई! पैड से लगी, एलबीडब्ल्यू की अपील लेकिन लेग साइड जा रही है, रन लेंगे। ${teamName} ${score} ${overs} ओवर के बाद`
+      },
+      te: {
+        wide: `వైడ్! దిశ తప్పిన బంతి! ${bowlerName} లైన్ తప్పించాడు। ${teamName} ${score} ${overs} ఓవర్ల తర్వాత`,
+        noBall: `నో బాల్! లైన్ దాటాడు! ${bowlerName} మళ్లీ వేయాల్సి వస్తుంది, మరియు ఇది ఫ్రీ హిట్! ${teamName} ${score} ${overs} ఓవర్ల తర్వాత`,
+        bye: `బై! వికెట్ కీపర్ సరిగ్గా పట్టుకోలేకపోయాడు, బ్యాట్స్మెన్లు అదనపు రన్ కోసం పరుగెత్తారు। ${teamName} ${score} ${overs} ఓవర్ల తర్వాత`,
+        legBye: `లెగ్ బై! ప్యాడ్స్కు తగిలింది, ఎల్బీడబ్ల్యూ అప్పీల్ కానీ లెగ్ సైడ్కు వెళ్తోంది, రన్ తీసుకుంటారు। ${teamName} ${score} ${overs} ఓవర్ల తర్వాత`
+      },
+      ta: {
+        wide: `வைட்! திசை தவறிய பந்து! ${bowlerName} லைனை விட்டு விலகினார். ${teamName} ${score} ${overs} ஓவர்களுக்கு பிறகு`,
+        noBall: `நோ பால்! லைனை தாண்டினார்! ${bowlerName} மீண்டும் வீச வேண்டும், இது ஃப்ரீ ஹிட்! ${teamName} ${score} ${overs} ஓவர்களுக்கு பிறகு`,
+        bye: `பை! விக்கெட் கீப்பர் சரியாக பிடிக்க முடியவில்லை, பேட்ஸ்மேன்கள் கூடுதல் ரனுக்காக ஓடினார்கள். ${teamName} ${score} ${overs} ஓவர்களுக்கு பிறகு`,
+        legBye: `லெக் பை! பேட்ஸில் பட்டது, எல்பிடபிள்யூ அப்பீல் ஆனால் லெக் சைடுக்கு போகிறது, ரன் எடுப்பார்கள். ${teamName} ${score} ${overs} ஓவர்களுக்கு பிறகு`
+      }
+    };
+    
+    const langComments = extraCommentary[this.selectedLanguage as 'en' | 'hi' | 'te' | 'ta'];
+    
+    if (type === 'wides') this.speak(langComments.wide);
+    else if (type === 'noBalls') this.speak(langComments.noBall);
+    else if (type === 'byes') this.speak(langComments.bye);
+    else if (type === 'legByes') this.speak(langComments.legBye);
   }
 
   openWicketModal() {
@@ -840,7 +1142,15 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
 
     await this.liveScoreService.updateScore(this.match.id, { cricketData }, user.email);
     
-    this.speak(`End of first innings. ${this.match.team1?.name} scored ${cricketData.team1Innings.runs} for ${cricketData.team1Innings.wickets}. ${this.match.team2?.name} needs ${cricketData.team1Innings.runs + 1} runs to win.`);
+    const lang = this.commentary[this.selectedLanguage as 'en' | 'hi' | 'te' | 'ta'];
+    const inningsEndText = this.selectedLanguage === 'en' ? 
+      `End of first innings. ${this.match.team1?.name} scored ${cricketData.team1Innings.runs} for ${cricketData.team1Innings.wickets}. ${this.match.team2?.name} needs ${cricketData.team1Innings.runs + 1} runs to win.` :
+      this.selectedLanguage === 'hi' ?
+      `पहली पारी समाप्त। ${this.match.team1?.name} ने ${cricketData.team1Innings.runs} रन बनाए ${cricketData.team1Innings.wickets} विकेट पर। ${this.match.team2?.name} को जीतने के लिए ${cricketData.team1Innings.runs + 1} रन चाहिए।` :
+      this.selectedLanguage === 'te' ?
+      `మొదటి ఇన్నింగ్స్ ముగిసింది. ${this.match.team1?.name} ${cricketData.team1Innings.runs} పరుగులు చేసింది ${cricketData.team1Innings.wickets} వికెట్లకు. ${this.match.team2?.name}కు గెలవడానికి ${cricketData.team1Innings.runs + 1} పరుగులు కావాలి.` :
+      `முதல் இன்னிங்ஸ் முடிந்தது. ${this.match.team1?.name} ${cricketData.team1Innings.runs} ரன்கள் எடுத்தது ${cricketData.team1Innings.wickets} விக்கெட்டுகளுக்கு. ${this.match.team2?.name}க்கு வெல்ல ${cricketData.team1Innings.runs + 1} ரன்கள் தேவை.`;
+    this.speak(inningsEndText);
   }
 
   async endMatch() {
@@ -877,7 +1187,14 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
       winner: winnerTeam
     });
     
-    this.speak(`Match completed! ${winnerName} wins ${margin}. What a fantastic game of cricket!`);
+    const matchEndText = this.selectedLanguage === 'en' ? 
+      `Match completed! ${winnerName} wins ${margin}. What a fantastic game of cricket!` :
+      this.selectedLanguage === 'hi' ?
+      `मैच समाप्त! ${winnerName} ${margin} से जीता। क्या शानदार क्रिकेट मैच था!` :
+      this.selectedLanguage === 'te' ?
+      `మ్యాచ్ పూర్తయింది! ${winnerName} ${margin} తో గెలిచింది. ఎంత అద్భుతమైన క్రికెట్ ఆట!` :
+      `போட்டி முடிந்தது! ${winnerName} ${margin} வித்தியாசத்தில் வென்றது. என்ன அருமையான கிரிக்கெட் ஆட்டம்!`;
+    this.speak(matchEndText);
   }
 
   getAvailableBatsmen() {
@@ -953,7 +1270,12 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
     const score = `${currentInnings.runs} for ${currentInnings.wickets}`;
     const overs = this.getCurrentOverDisplay();
     
-    this.speak(`Wicket! ${outBatsmanName} is out! Great bowling by ${bowlerName}. ${newBatsmanName} comes to the crease. ${teamName} ${score} after ${overs} overs`);
+    const lang = this.commentary[this.selectedLanguage as 'en' | 'hi' | 'te' | 'ta'];
+    const wicketText = lang.wicket
+      .replace('{outBatsman}', outBatsmanName)
+      .replace('{bowler}', bowlerName)
+      .replace('{newBatsman}', newBatsmanName);
+    this.speak(`${wicketText} ${teamName} ${score} after ${overs} overs`);
     
     this.closeWicketModal();
   }
@@ -1011,7 +1333,13 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
     const teamName = cricketData.currentInning === 1 ? this.match.team1?.name : this.match.team2?.name;
     const currentScore = `${currentInnings.runs} for ${currentInnings.wickets}`;
     
-    this.speak(`End of over ${completedOvers}. ${teamName} ${currentScore} after ${completedOvers} overs. ${newBowlerName} to bowl the next over`);
+    const lang = this.commentary[this.selectedLanguage as 'en' | 'hi' | 'te' | 'ta'];
+    const endOverText = lang.endOver
+      .replace('{overs}', completedOvers.toString())
+      .replace('{team}', teamName || '')
+      .replace('{score}', currentScore)
+      .replace('{bowler}', newBowlerName);
+    this.speak(endOverText);
     
     this.closeEndOverModal();
   }
