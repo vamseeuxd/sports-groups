@@ -17,7 +17,7 @@ import { CricketScoreboardComponent } from '../cricket-scoreboard/cricket-scoreb
         <h5 class="mb-0">
           <i class="bi bi-broadcast me-2"></i>Live Scoreboard
         </h5>
-        <span class="badge" [class]="getStatusBadgeClass()">
+        <span class="badge me-3" [class]="getStatusBadgeClass()">
           {{ match.status | titlecase }}
         </span>
       </div>

@@ -8,82 +8,90 @@ import { IKnockoutMatch } from '../../models';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { PlayerRegistrationService } from '../../services/player-registration.service';
 import { LoaderService } from '../../services';
-import { SharedLayoutComponent } from '../shared-layout/shared-layout.component';
 import { SharedModalComponent } from '../shared-modal/shared-modal.component';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 
 @Component({
   selector: 'app-cricket-scoreboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedLayoutComponent, SharedModalComponent],
+  imports: [CommonModule, FormsModule, SharedModalComponent, PopoverModule],
   template: `
-    <app-shared-layout 
-      title="Cricket Match" 
-      icon="bi-trophy"
-      [actions]="getActionMenuItems()"
-      [loading]="false">
+    <!-- <app-shared-layout title="Cricket Match" icon="bi-trophy" [actions]="getActionMenuItems()" [loading]="false"> -->
       
+    <ng-template #popTemplate>
+      <ul class="list-group p-1 shadow border">
+        <li *ngFor="let action of getActionMenuItems()" 
+            class="list-group-item" 
+            [class]="action.class || ''"
+            role="button" 
+            (click)="contentMenu.hide(); action.handler()">
+          <i *ngIf="action.icon" [class]="'bi ' + action.icon + ' me-2'"></i>
+          {{ action.label }}
+        </li>
+      </ul>
+    </ng-template>
+    <button type="button" 
+            class="btn btn-outline-dark border-0 btn-sm position-absolute top-0 end-0 m-1"
+            #contentMenu="bs-popover" 
+            [popover]="popTemplate" 
+            container="body" 
+            placement="bottom" 
+            [outsideClick]="true">
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+
       <!-- Match Score Display -->
-      <div class="score-display-section mb-4">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="team-score-card">
-              <div class="team-header">
-                <h6 class="team-name">{{ match.team1?.name }}</h6>
-                <span class="innings-indicator" *ngIf="liveScore?.cricketData?.currentInning === 1">
-                  <i class="bi bi-circle-fill text-success"></i> Batting
+      <div class="p-1 mb-1">
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="d-flex flex-column justify-content-center align-items-center bg-white p-1 rounded border">
+              <h6 class="w-100 d-flex align-items-center ps-2">
+                {{ match.team1?.name }}
+                <span style="font-size: 0.6rem;" class="ms-2 blink-animation" *ngIf="liveScore?.cricketData?.currentInning === 1">
+                  <i class="bi bi-circle-fill text-danger"></i> Batting
                 </span>
-              </div>
-              <div class="score-display">
-                <span class="runs-wickets">{{ getCricketScore('team1') }}</span>
-                <small class="overs-display">({{ getOversDisplay('team1') }} overs)</small>
-              </div>
+              </h6>
+              <h4 class="m-0 p-0 text-secondary">{{ getCricketScore('team1') }}</h4>
+              <small>({{ getOversDisplay('team1') }} overs)</small>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="team-score-card">
-              <div class="team-header">
-                <h6 class="team-name">{{ match.team2?.name }}</h6>
-                <span class="innings-indicator" *ngIf="liveScore?.cricketData?.currentInning === 2">
-                  <i class="bi bi-circle-fill text-success"></i> Batting
+          <div class="col-6">
+            <div class="d-flex flex-column justify-content-center align-items-center bg-white p-1 rounded border">
+              <h6 class="w-100 d-flex align-items-center ps-2">
+                {{ match.team2?.name }}
+                <span style="font-size: 0.6rem;" class="ms-2 blink-animation" *ngIf="liveScore?.cricketData?.currentInning === 2">
+                  <i class="bi bi-circle-fill text-danger"></i> Batting
                 </span>
-              </div>
-              <div class="score-display">
-                <span class="runs-wickets">{{ getCricketScore('team2') }}</span>
-                <small class="overs-display">({{ getOversDisplay('team2') }} overs)</small>
-              </div>
+              </h6>
+              <h4 class="m-0 p-0 text-secondary">{{ getCricketScore('team2') }}</h4>
+              <small>({{ getOversDisplay('team2') }} overs)</small>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Current Match Status -->
-      <div *ngIf="liveScore?.cricketData" class="current-status-section mb-4">
-        <div class="status-card">
-          <div class="row g-3">
+      <div *ngIf="liveScore?.cricketData" class="mb-2">
+        <div class="p-3 border rounded bg-white">
+          <div class="row">
             <div class="col-md-8">
-              <div class="current-players">
-                <div class="batsmen-info">
                   <strong>{{ getCurrentBattingTeam() }} Batting:</strong>
                   <div class="player-stats mt-2">
-                    <div *ngFor="let batsman of liveScore?.cricketData?.currentBatsmen || []; let i = index" class="batsman-stat">
-                      <span class="player-name">{{ getPlayerName(batsman) }}</span>
-                      <span class="player-role">{{ i === 0 ? '(Striker)' : '(Non-Striker)' }}</span>
-                      <span class="player-score">{{ getBatsmanStats(batsman) }}</span>
+                    <div *ngFor="let batsman of liveScore?.cricketData?.currentBatsmen || []; let i = index" class="border-bottom pb-1 mb-1 d-flex justify-content-between align-items-center">
+                      <span class="text-main fw-medium">{{ getPlayerName(batsman) }}</span>
+                      <span class="text-main-dark fw-medium">{{ i === 0 ? '(Striker)' : '(Non-Striker)' }}</span>
+                      <span class="text-main-dark fw-medium">{{ getBatsmanStats(batsman) }}</span>
                     </div>
                   </div>
-                </div>
-              </div>
             </div>
             <div class="col-md-4">
-              <div class="bowling-info">
+              <div>
                 <strong>Bowler:</strong>
-                <div class="bowler-stat mt-2">
-                  <div class="player-name">{{ getPlayerName(liveScore?.cricketData?.currentBowler) || 'N/A' }}</div>
-                  <div class="player-score">{{ getBowlerStats(liveScore?.cricketData?.currentBowler) }}</div>
-                </div>
-                <div class="over-info mt-2">
-                  <strong>Over:</strong> {{ getCurrentOverDisplay() }}
-                </div>
+                <div class="mt-0 d-flex justify-content-between align-items-center">
+                  <div class="text-main">{{ getPlayerName(liveScore?.cricketData?.currentBowler) || 'N/A' }}</div>
+                  <div class="text-main">{{ getBowlerStats(liveScore?.cricketData?.currentBowler) }}</div>
+                </div>                
+                <strong>Over:</strong> {{ getCurrentOverDisplay() }}                
               </div>
             </div>
           </div>
@@ -91,42 +99,40 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
       </div>
 
       <!-- Score Controls -->
-      <div *ngIf="canUpdateScore && match.status === 'in-progress'" class="scoring-section">
-        <div class="section-header">
-          <h6><i class="bi bi-controller me-2"></i>Scoring Controls</h6>
-        </div>
+      <div *ngIf="canUpdateScore && match.status === 'in-progress'" class="p-3 border rounded bg-white">
+        <h6 class="m-0 p-0 w-100"><i class="bi bi-controller me-2"></i>Scoring Controls</h6>
         
-        <div class="runs-section mb-3">
+        <div class="runs-section mb-2">
           <label class="control-label">Runs</label>
-          <div class="button-grid">
-            <button class="score-btn dot-btn" (click)="addRuns(0)" [disabled]="isOverComplete()">Dot</button>
-            <button class="score-btn runs-btn" (click)="addRuns(1)" [disabled]="isOverComplete()">1</button>
-            <button class="score-btn runs-btn" (click)="addRuns(2)" [disabled]="isOverComplete()">2</button>
-            <button class="score-btn runs-btn" (click)="addRuns(3)" [disabled]="isOverComplete()">3</button>
-            <button class="score-btn boundary-btn" (click)="addRuns(4)" [disabled]="isOverComplete()">4</button>
-            <button class="score-btn six-btn" (click)="addRuns(6)" [disabled]="isOverComplete()">6</button>
+          <div class="d-flex gap-1">
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-success" (click)="addRuns(0)" [disabled]="isOverComplete()">Dot</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-warning" (click)="addRuns(1)" [disabled]="isOverComplete()">1</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-warning" (click)="addRuns(2)" [disabled]="isOverComplete()">2</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-warning" (click)="addRuns(3)" [disabled]="isOverComplete()">3</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-secondary" (click)="addRuns(4)" [disabled]="isOverComplete()">4</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-dark" (click)="addRuns(6)" [disabled]="isOverComplete()">6</button>
           </div>
         </div>
         
-        <div class="extras-section mb-3">
+        <div class="mb-2">
           <label class="control-label">Extras</label>
-          <div class="button-grid">
-            <button class="score-btn extra-btn" (click)="addExtra('wides')" [disabled]="isOverComplete()">Wide</button>
-            <button class="score-btn extra-btn" (click)="addExtra('noBalls')" [disabled]="isOverComplete()">No Ball</button>
-            <button class="score-btn extra-btn" (click)="addExtra('byes')" [disabled]="isOverComplete()">Bye</button>
-            <button class="score-btn extra-btn" (click)="addExtra('legByes')" [disabled]="isOverComplete()">Leg Bye</button>
+          <div class="d-flex gap-1">
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-outline-secondary" (click)="addExtra('wides')" [disabled]="isOverComplete()">Wide</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-outline-secondary" (click)="addExtra('noBalls')" [disabled]="isOverComplete()">No Ball</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-outline-secondary" (click)="addExtra('byes')" [disabled]="isOverComplete()">Bye</button>
+            <button style="font-size: 0.8rem;" class="text-nowrap col btn btn-outline-secondary" (click)="addExtra('legByes')" [disabled]="isOverComplete()">Leg Bye</button>
           </div>
         </div>
         
         <div class="action-section mb-3">
           <div class="row g-2">
             <div class="col-6">
-              <button class="btn btn-danger w-100" (click)="openWicketModal()" [disabled]="isOverComplete()">
+              <button style="font-size: 0.8rem;" class="btn-sm btn btn-danger w-100" (click)="openWicketModal()" [disabled]="isOverComplete()">
                 <i class="bi bi-x-circle me-2"></i>Wicket
               </button>
             </div>
             <div class="col-6">
-              <button class="btn btn-info w-100" (click)="openEndOverModal()" [disabled]="!isOverComplete()">
+              <button style="font-size: 0.8rem;" class="btn-sm btn btn-info w-100" (click)="openEndOverModal()" [disabled]="!isOverComplete()">
                 <i class="bi bi-arrow-right-circle me-2"></i>End Over
               </button>
             </div>
@@ -134,7 +140,7 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
         </div>
         
         <div *ngIf="actionHistory.length > 0" class="undo-section">
-          <button class="btn btn-outline-danger w-100" (click)="undoLastAction()">
+          <button style="font-size: 0.8rem;" class="btn-sm btn btn-outline-danger w-100" (click)="undoLastAction()">
             <i class="bi bi-arrow-counterclockwise me-2"></i>Undo Last Action ({{ actionHistory.length }})
           </button>
         </div>
@@ -142,11 +148,11 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
 
       <!-- Initialize Cricket Data -->
       <div *ngIf="canUpdateScore && !liveScore?.cricketData" class="init-section text-center">
-        <div class="empty-state">
+        <div class="py-4">
           <i class="bi bi-gear display-4 text-muted mb-3"></i>
           <h5>Initialize Cricket Data</h5>
           <p class="text-muted">Set up the match to start scoring</p>
-          <button class="btn btn-primary" (click)="initializeCricketData()">
+          <button style="font-size: 0.8rem;" class="btn-sm btn btn-primary" (click)="initializeCricketData()">
             <i class="bi bi-play-circle me-2"></i>Start Match
           </button>
         </div>
@@ -155,17 +161,18 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
       <!-- Match Control Buttons -->
       <div *ngIf="canUpdateScore && liveScore?.cricketData" class="match-control-section">
         <div *ngIf="isInningsComplete() && !isBothInningsComplete()" class="text-center mb-3">
-          <button class="btn btn-success btn-lg" (click)="startNextInnings()">
+          <button style="font-size: 0.8rem;" class="btn-sm btn btn-success btn-lg" (click)="startNextInnings()">
             <i class="bi bi-arrow-right me-2"></i>Start Next Innings
           </button>
         </div>
         <div *ngIf="isBothInningsComplete()" class="text-center">
-          <button class="btn btn-danger btn-lg" (click)="endMatch()">
+          <button style="font-size: 0.8rem;" class="btn-sm btn btn-danger btn-lg" (click)="endMatch()">
             <i class="bi bi-trophy me-2"></i>End Match & Announce Winner
           </button>
         </div>
       </div>
-    </app-shared-layout>
+    
+    <!-- </app-shared-layout> -->
 
     <!-- Wicket Modal -->
     <app-shared-modal 
@@ -453,7 +460,7 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
     
     .team-score-card {
       background: white;
-      padding: 1.5rem;
+      padding: 0.5rem;
       border-radius: 8px;
       border: 1px solid var(--theme-accent);
       height: 100%;
@@ -482,7 +489,7 @@ import { SharedModalComponent } from '../shared-modal/shared-modal.component';
     }
     
     .runs-wickets {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: bold;
       color: var(--theme-primary);
       display: block;
@@ -763,7 +770,12 @@ export class CricketScoreboardComponent implements OnInit, OnDestroy {
     }
   };
   
-  getActionMenuItems() {
+  getActionMenuItems(): Array<{
+    label: string;
+    icon?: string;
+    handler: () => void;
+    class?: string;
+  }> {
     const items = [];
     
     if (this.liveScore?.cricketData) {
